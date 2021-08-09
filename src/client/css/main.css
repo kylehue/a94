@@ -1,0 +1,21 @@
+:root {
+	--white: #fbfeff;
+	--black: #1d1f23;
+	--red: #ff1b41;
+	--dim: #120b11;
+}
+
+::selection {
+	background: var(--red);
+	color: var(--white);
+}
+
+* {
+	padding: 0;
+	margin: 0;
+	outline: 0;
+	border: none;
+	float: left;
+	font-family: "Catamaran", sans-serif;
+	color: var(--black);
+}
