@@ -1,15 +1,214 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Untitled</title>
+		<title>a94</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="preconnect" href="https://fonts.gstatic.com">
-		<link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;700;800&display=swap" rel="stylesheet">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="css/main.css">
+		<link rel="stylesheet" type="text/css" href="css/component.css">
+		<link rel="stylesheet" type="text/css" href="css/navigation.css">
+		<link rel="stylesheet" type="text/css" href="css/body.css">
 	</head>
-	<body>
-		
+	<body class="flex col">
+		<div id="navigation" class="darko-a flex row v-center">
+			<div id="brand" class="flex center">
+				<p>a94</p>
+			</div>
+			<div id="rooms" class="select flex col h-center">
+				<div class="select-infoWrapper flex row v-center">
+					<label class="select-value">Rooms</label>
+					<img src="assets/svg/arrow-down.svg" class="select-arrow"></img>
+				</div>
+				<div class="select-itemWrapper hidden flex col h-center">
+					<input id="roomFilter" class="select-filter" placeholder="Filter" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
+					<button value="321" class="select-item flex row v-center room">
+					<img src="assets/svg/arrow-down.svg">
+					<span>Room A NIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII</span>
+					</button>
+					<button value="654" class="select-item flex row v-center room">
+					<img src="assets/svg/arrow-down.svg">
+					<span>Room B</span>
+					</button>
+					<button value="328" class="select-item flex row v-center room">
+					<img src="assets/svg/arrow-down.svg">
+					<span>Room C</span>
+					</button>
+				</div>
+			</div>
+			<button id="createRoom" class="default flex row v-center">
+			<img src="assets/svg/arrow-down.svg">
+			<span>Create Room</span>
+			</button>
+			<input id="username" class="default" placeholder="Username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
+		</div>
+		<div id="body" class="flex row">
+			<div id="chatApp" class="flex col">
+				<div id="messages" class="flex col">
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">Anon5912</p>
+							<p class="timestamp">10:37 AM</p>
+						</div>
+						<p>Hello guys</p>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">getrekt47</p>
+							<p class="timestamp">10:39 AM</p>
+						</div>
+						<p>hey there! what's up? btw here's an image of spongebob</p>
+						<img src="assets/images/2pliq2.jpg">
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">nospampls69</p>
+							<p class="timestamp">10:40 AM</p>
+						</div>
+						<p>guyz plz dont spam lul</p>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">nospampls69</p>
+							<p class="timestamp">10:40 AM</p>
+						</div>
+						<p>guyz plz dont spam lul</p>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">nospampls69</p>
+							<p class="timestamp">10:40 AM</p>
+						</div>
+						<p>guyz plz dont spam lul</p>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">nospampls69</p>
+							<p class="timestamp">10:40 AM</p>
+						</div>
+						<p>guyz plz dont spam lul</p>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">nospampls69</p>
+							<p class="timestamp">10:40 AM</p>
+						</div>
+						<p>guyz plz dont spam lul</p>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">nospampls69</p>
+							<p class="timestamp">10:40 AM</p>
+						</div>
+						<p>guyz plz dont spam lul</p>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">nospampls69</p>
+							<p class="timestamp">10:40 AM</p>
+						</div>
+						<p>guyz plz dont spam lul</p>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">nospampls69</p>
+							<p class="timestamp">10:40 AM</p>
+						</div>
+						<p>guyz plz dont spam lul</p>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">nospampls69</p>
+							<p class="timestamp">10:40 AM</p>
+						</div>
+						<p>guyz plz dont spam lul</p>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">nospampls69</p>
+							<p class="timestamp">10:40 AM</p>
+						</div>
+						<p>guyz plz dont spam lul</p>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">nospampls69</p>
+							<p class="timestamp">10:40 AM</p>
+						</div>
+						<p>guyz plz dont spam lul</p>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">nospampls69</p>
+							<p class="timestamp">10:40 AM</p>
+						</div>
+						<p>guyz plz dont spam lul</p>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">nospampls69</p>
+							<p class="timestamp">10:40 AM</p>
+						</div>
+						<p>guyz plz dont spam lul</p>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">nospampls69</p>
+							<p class="timestamp">10:40 AM</p>
+						</div>
+						<p>guyz plz dont spam lul</p>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">nospampls69</p>
+							<p class="timestamp">10:40 AM</p>
+						</div>
+						<p>guyz plz dont spam lul</p>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">nospampls69</p>
+							<p class="timestamp">10:40 AM</p>
+						</div>
+						<p>guyz plz dont spam lul</p>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">nospampls69</p>
+							<p class="timestamp">10:40 AM</p>
+						</div>
+						<p>guyz plz dont spam lul</p>
+					</div>
+				</div>
+				<div id="textArea" class="textArea flex row v-center">
+					<div id="uploadFile" class="custom-file">
+						<input id="fileInput" type="file" multiple title="">
+						<button class="flex col center">
+							<img src="assets/svg/arrow-down.svg">
+						</button>
+					</div>
+					<label class="placeholder">Type here...</label>
+					<textarea class="auto-height default" rows="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+				</div>
+			</div>
+			<!-- <div id="users" class="flex col h-center">
+				<label>Users</label>
+				<div class="user">
+					<p class="username">Anon#5912</p>
+				</div>
+				<div class="user">
+					<p class="username">Just a guy</p>
+				</div>
+			</div> -->
+		</div>
+		<script
+		src="https://code.jquery.com/jquery-3.6.0.min.js"
+		integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+		crossorigin="anonymous"></script>
+		<script src="js/autosize.js"></script>
+		<script src="js/component.js"></script>
 		<script src="js/app.js"></script>
 	</body>
 </html>
