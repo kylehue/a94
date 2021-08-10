@@ -1,13 +1,34 @@
 :root {
-	--white: #fbfeff;
-	--black: #1d1f23;
-	--red: #ff1b41;
-	--dim: #120b11;
+	--white: #d3d6d9;
+	--accent: #3c69fc;
+	--darko-a: #1b1d20;
+	--darko-b: #25272b;
+	--darko-c: #303338;
 }
 
-::selection {
-	background: var(--red);
-	color: var(--white);
+::placeholder, .placeholder {
+	color: rgba(255, 255, 255, 0.2);
+	user-select: none;
+	pointer-events: none;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-corner {
+  background: none;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(240, 230, 255, 0.04);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(240, 230, 255, 0.08);
+  border-radius: 10px;
 }
 
 * {
@@ -15,7 +36,121 @@
 	margin: 0;
 	outline: 0;
 	border: none;
-	float: left;
-	font-family: "Catamaran", sans-serif;
-	color: var(--black);
+	font-family: "Roboto Mono", "Consolas";
+	font-size: 12px;
+	color: var(--white);
+}
+
+body {
+	background: black;
+	width: 100vw;
+	height: 100vh;
+}
+
+div {
+	position: relative;
+}
+
+img {
+	pointer-events: none;
+	user-select: none;
+}
+
+input.default {
+	background: var(--darko-b);
+	border-radius: 3px;
+	padding-left: 2px;
+	padding-right: 2px;
+	margin: 2px;
+	width: auto;
+	height: 30px;
+}
+
+input.default:focus {
+	box-shadow: 0 0 0 2px var(--accent);
+}
+
+button.default {
+	background: var(--darko-b);
+	border-radius: 3px;
+	cursor: pointer;
+	width: fit-content;
+	height: 30px;
+}
+
+button.default:hover {
+	filter: brightness(1.05);
+	color: white;
+}
+
+button.default:active {
+	filter: brightness(0.85);
+}
+
+button {
+	padding: 0 6px;
+}
+
+button.default img {
+	width: auto;
+	height: 30%;
+	margin-right: 10px;
+}
+
+button span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: 100%;
+	text-align: left;
+	user-select: none;
+	pointer-events: none;
+}
+
+.darko-a {
+	background: var(--darko-a);
+}
+
+.flex {
+	display: flex;
+	align-content: flex-start;
+	align-items: flex-start;
+	justify-content: flex-start;
+	flex-wrap: nowrap;
+}
+
+.flex.row {
+	flex-direction: row;
+}
+
+.flex.row.h-center {
+	justify-content: center;
+}
+
+.flex.row.v-center {
+	align-items: center;
+	align-content: center;
+}
+
+.flex.col {
+	flex-direction: column;
+}
+
+.flex.col.h-center {
+	align-items: center;
+	align-content: center;
+}
+
+.flex.col.v-center {
+	justify-content: center;
+}
+
+.flex.center {
+	justify-content: center;
+	align-items: center;
+	align-content: center;
+}
+
+.hidden {
+	display: none;
 }

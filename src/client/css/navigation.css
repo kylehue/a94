@@ -1,0 +1,18 @@
+#navigation {
+	width: 100vw;
+	height: 50px;
+}
+
+#navigation > * {
+	margin: 5px;
+}
+
+#navigation #brand {
+	pointer-events: none;
+	user-select: none;
+	font-weight: 800;
+}
+
+#username {
+	margin-left: auto;
+}

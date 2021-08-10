@@ -1,0 +1,93 @@
+#body {
+	width: 100vw;
+	height: 100%;
+	max-height: calc(100vh - 50px);
+}
+
+#chatApp {
+	background: var(--darko-b);
+	width: 70%;
+	height: 100%;
+	padding: 5px;
+	box-sizing: border-box;
+}
+
+#messages {
+	overflow: hidden auto;
+	padding-bottom: 5px;
+	margin-bottom: 5px;
+	width: 100%;
+	height: 100%;
+}
+
+#messages .message {
+	margin: 2.5px 0;
+	padding: 2.5px 0;
+	width: 100%;
+	height: fit-content;
+}
+
+#messages .message .username {
+	white-space: nowrap;
+	font-weight: 800;
+}
+
+#messages .message .timestamp {
+	font-size: 10px;
+	margin-left: 5px;
+	color: rgba(255, 255, 255, 0.25);
+}
+
+#messages .message img {
+	margin-top: 5px;
+	border-radius: 5px;
+	cursor: pointer;
+	width: calc(100% - 30px);
+	max-width: 300px;
+	height: auto;
+	pointer-events: all;
+}
+
+#textArea {
+	width: 100%;
+	height: fit-content;
+}
+
+#textArea label.placeholder {
+	position: absolute;
+	z-index: 2;
+	pointer-events: none;
+	user-select: none;
+	margin-left: 38px;
+}
+
+#textArea textarea {
+	z-index: 1;
+	width: 100%;
+	height: auto;
+	resize: none;
+	background: var(--darko-c);
+	border-radius: 3px;
+	overflow: hidden auto;
+	padding: 10px 2px;
+	max-height: 200px;
+	padding-left: 36px;
+}
+
+#users {
+	position: absolute;
+	right: 0;
+	width: 30%;
+	min-width: 200px;
+}
+
+#uploadFile {
+	position: absolute;
+	z-index: 3;
+	top: 2px;
+	left: 2px;
+}
+
+#uploadFile > button:hover {
+	filter: brightness(2);
+}
