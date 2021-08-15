@@ -1,12 +1,12 @@
 #body {
 	width: 100vw;
 	height: 100%;
-	max-height: calc(100vh - 50px);
+	max-height: calc(100vh - var(--nav-height));
 }
 
 #chatApp {
 	background: var(--darko-b);
-	width: 70%;
+	width: calc(100% - var(--side-width));
 	height: 100%;
 	padding: 5px;
 	box-sizing: border-box;
@@ -25,6 +25,10 @@
 	padding: 2.5px 0;
 	width: 100%;
 	height: fit-content;
+}
+
+#messages .message > p {
+	white-space: pre-line;
 }
 
 #messages .message .username {
@@ -50,7 +54,7 @@
 
 #textArea {
 	width: 100%;
-	height: fit-content;
+	height: auto;
 }
 
 #textArea label.placeholder {
@@ -68,17 +72,10 @@
 	resize: none;
 	background: var(--darko-c);
 	border-radius: 3px;
-	overflow: hidden auto;
 	padding: 10px 2px;
 	max-height: 200px;
+	overflow: hidden auto;
 	padding-left: 36px;
-}
-
-#users {
-	position: absolute;
-	right: 0;
-	width: 30%;
-	min-width: 200px;
 }
 
 #uploadFile {
@@ -88,6 +85,86 @@
 	left: 2px;
 }
 
+#uploadFile > button {
+	background: none;
+}
+
 #uploadFile > button:hover {
 	filter: brightness(2);
+}
+
+#users {
+	position: absolute;
+	z-index: 5;
+	right: 0;
+	width: var(--side-width);
+	height: 100%;
+	background: var(--darko-b);
+	box-shadow: -5px 0 7px rgba(0, 0, 0, 0.15);
+	box-sizing: border-box;
+	padding: 5px;
+}
+
+#users .wrapper {
+	overflow: hidden scroll;
+	width: 100%;
+	height: 100%;
+	padding-right: 10px;
+	box-sizing: border-box;
+}
+
+#users label.title {
+	width: 100%;
+	font-size: 14px;
+	font-weight: 600;
+	margin-bottom: 10px;
+	line-height: 1;
+}
+
+#users .user {
+	width: 100%;
+	height: 40px;
+}
+
+#users .user img.user-icon {
+	height: 60%;
+	border-radius: 100px;
+	margin: 0 5px;
+}
+
+#users .user label.username {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+#users .user button.validate {
+	width: 25px;
+	height: 25px;
+	background: var(--darko-a);
+	border-radius: 100px;
+	margin: 0 2.5px;
+	cursor: pointer;
+}
+
+#users .user button.validate:hover {
+	filter: brightness(1.1);
+}
+
+#users .user button.validate:active {
+	filter: brightness(0.85);
+}
+
+#users .user button.confirm {
+	margin-left: auto;
+}
+
+#users .user button.validate img {
+	width: auto;
+	height: 60%;
+}
+
+#roomApp input {
+	width: 100%;
+	height: 35px;
 }

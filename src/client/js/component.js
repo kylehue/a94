@@ -82,7 +82,8 @@ $("textarea").on("input", event => {
 });
 
 //Textarea autosize
-autosize($("textarea.auto-height"));
+const textAreas = $("textarea.auto-height");
+autosize(textAreas);
 
 //Custom file button
 $(".custom-file > button").on("click", event => {
@@ -90,4 +91,4 @@ $(".custom-file > button").on("click", event => {
 	const parent = button.closest(".custom-file");
 	const input = parent.find("input[type='file']");
 	input.trigger("click");
-})
+});

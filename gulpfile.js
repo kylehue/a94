@@ -108,7 +108,7 @@ gulp.task("client:svg", function() {
 
 gulp.task("client:html", function() {
 	return gulp.src([paths.client.html])
-		.pipe(replace("lib/vue.dev.js", "lib/vue.prod.js"))
+		.pipe(replace("js/vue.dev.js", "js/vue.prod.js"))
 		.pipe(htmlminify())
 		.pipe(gulp.dest("dist/client/"));
 });

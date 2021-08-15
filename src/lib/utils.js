@@ -17,9 +17,9 @@ module.exports = {
 
 		generateId();
 
-		let start = performance.now();
+		let start = Date.now();
 		while (_ids.includes(id)) {
-			if (performance.now() - start > 20) {
+			if (Date.now() - start > 20) {
 				_lengthAuto = !_lengthAuto ? length + 1 : _lengthAuto + 1;
 			}
 			generateId();

@@ -1,9 +1,19 @@
 :root {
 	--white: #d3d6d9;
 	--accent: #3c69fc;
+
 	--darko-a: #1b1d20;
 	--darko-b: #25272b;
 	--darko-c: #303338;
+	--darko-d: #2b2d31;
+	--darko-e: #3c4148;
+	--darko-f: #41454c;
+	--darko-g: #525761;
+	--darko-h: #626976;
+	--darko-i: #7b808b;
+
+	--nav-height: 50px;
+	--side-width: 250px;
 }
 
 ::placeholder, .placeholder {
@@ -13,8 +23,8 @@
 }
 
 ::-webkit-scrollbar {
-  width: 9px;
-  height: 9px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-corner {
@@ -45,6 +55,7 @@ body {
 	background: black;
 	width: 100vw;
 	height: 100vh;
+	overflow: hidden;
 }
 
 div {
@@ -59,11 +70,11 @@ img {
 input.default {
 	background: var(--darko-b);
 	border-radius: 3px;
-	padding-left: 2px;
-	padding-right: 2px;
-	margin: 2px;
+	padding-left: 5px;
+	padding-right: 5px;
 	width: auto;
-	height: 30px;
+	height: 35px;
+	box-sizing: border-box;
 }
 
 input.default:focus {
@@ -75,7 +86,7 @@ button.default {
 	border-radius: 3px;
 	cursor: pointer;
 	width: fit-content;
-	height: 30px;
+	height: 35px;
 }
 
 button.default:hover {
@@ -88,7 +99,13 @@ button.default:active {
 }
 
 button {
-	padding: 0 6px;
+	padding: 0 10px;
+	user-select: none;
+}
+
+button * {
+	pointer-events: none;
+	user-select: none;
 }
 
 button.default img {
@@ -107,8 +124,18 @@ button span {
 	pointer-events: none;
 }
 
+button.accent {
+	background: var(--accent);
+}
+
 .darko-a {
 	background: var(--darko-a);
+}
+
+.note {
+	color: var(--darko-i);
+	pointer-events: none;
+	user-select: none;
 }
 
 .flex {
@@ -151,6 +178,95 @@ button span {
 	align-content: center;
 }
 
+.flex .nl {
+	flex-basis: 100%;
+}
+
 .hidden {
 	display: none;
+}
+
+.dialog {
+	background: var(--darko-c);
+	position: absolute;
+	z-index: 9999;
+	margin: auto;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+
+	padding: 5px 10px;
+	width: fit-content;
+	height: fit-content;
+	min-width: 100px;
+	min-height: 60px;
+	box-sizing: border-box;
+	border-radius: 5px;
+	box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.2);
+}
+
+.dialog .header {
+	width: 100%;
+	height: 30px;
+}
+
+.dialog .body {
+	width: 100%;
+	height: fit-content;
+	min-height: 30px;
+	margin: 2.5px 0;
+	padding: 2.5px 0;
+}
+
+.dialog .footer {
+	width: 100%;
+	height: 30px;
+	margin-bottom: 5px;
+	margin-top: 10px;
+}
+
+.dialog .header label.title {
+	font-weight: 800;
+	font-size: 14px;
+	user-select: none;
+	pointer-events: none;
+}
+
+.dialog .header button.close {
+	margin-left: auto;
+
+	background: none;
+	cursor: pointer;
+	width: 20px;
+	height: 20px;
+}
+
+.dialog .header button.close::before {
+	content: "✕";
+	font-size: 10px;
+}
+
+.dialog .header button.close:hover::before {
+	color: white;
+	transition-duration: 200ms;
+}
+
+.dialog .header button.close:active::before {
+	opacity: 0.5;
+	transition-duration: 100ms;
+}
+
+.dialog .footer button.cancel {
+	background: none;
+	color: var(--darko-i);
+}
+
+.dialog .body > * {
+	margin: 2.5px;
+}
+
+.dialog .footer button.submit {
+	margin-left: auto;
+	min-width: 90px;
 }
