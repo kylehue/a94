@@ -13,9 +13,28 @@
 		<link rel="stylesheet" type="text/css" href="css/body.css">
 	</head>
 	<body class="flex col">
+		<div id="roomApp" class="dialog flex col" v-if="!hidden">
+			<div class="header flex row v-center">
+				<label class="title">Enter your code</label>
+				<button class="close flex center" v-on:click="hide"></button>
+			</div>
+			<div class="body flex">
+				<p style="width:250px;" class="note">This will connect you to the people who have the same code.</p>
+			</div>
+			<div class="body flex">
+				<input id="roomCode" type="text" class="default" placeholder="Code" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+			</div>
+			<div class="body flex">
+				<p class="note">Leave blank for a random code.</p>
+			</div>
+			<div class="footer flex row v-center">
+				<button class="cancel default accent" v-on:click="hide">Cancel</button>
+				<button class="submit default accent" v-on:click="join">Join</button>
+			</div>
+		</div>
 		<div id="navigation" class="darko-a flex row v-center">
 			<div id="brand" class="flex center">
-				<p>a94</p>
+				<img src="assets/svg/a94.svg">
 			</div>
 			<div id="rooms" class="select flex col h-center">
 				<div class="select-infoWrapper flex row v-center">
@@ -25,22 +44,22 @@
 				<div class="select-itemWrapper hidden flex col h-center">
 					<input id="roomFilter" class="select-filter" placeholder="Filter" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
 					<button value="321" class="select-item flex row v-center room">
-					<img src="assets/svg/arrow-down.svg">
+					<img src="assets/svg/chat-bubble.svg">
 					<span>Room A NIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII</span>
 					</button>
 					<button value="654" class="select-item flex row v-center room">
-					<img src="assets/svg/arrow-down.svg">
+					<img src="assets/svg/chat-bubble.svg">
 					<span>Room B</span>
 					</button>
 					<button value="328" class="select-item flex row v-center room">
-					<img src="assets/svg/arrow-down.svg">
+					<img src="assets/svg/chat-bubble.svg">
 					<span>Room C</span>
 					</button>
 				</div>
 			</div>
 			<button id="createRoom" class="default flex row v-center">
-			<img src="assets/svg/arrow-down.svg">
-			<span>Create Room</span>
+			<img src="assets/svg/plus.svg">
+			<span>Join Room</span>
 			</button>
 			<input id="username" class="default" placeholder="Username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
 		</div>
@@ -186,28 +205,42 @@
 					<div id="uploadFile" class="custom-file">
 						<input id="fileInput" type="file" multiple title="">
 						<button class="flex col center">
-							<img src="assets/svg/arrow-down.svg">
+						<img src="assets/svg/plus-alt.svg">
 						</button>
 					</div>
 					<label class="placeholder">Type here...</label>
-					<textarea class="auto-height default" rows="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+					<textarea id="composeMessage" class="auto-height default" rows="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
 				</div>
 			</div>
-			<!-- <div id="users" class="flex col h-center">
-				<label>Users</label>
-				<div class="user">
-					<p class="username">Anon#5912</p>
+			<div id="users" class="flex col h-center">
+				<div class="wrapper flex col">
+					<label class="title">Users (20)</label>
+					<div class="user flex row v-center">
+						<img class="user-icon" src="assets/svg/user.svg"></img>
+						<label class="username">Anon#591ffffffffffffffffffffffffffffffffffffffffffffffff2</label>
+					</div>
+					<div class="user flex row v-center">
+						<img class="user-icon" src="assets/svg/user.svg"></img>
+						<label class="username">Anon#5912</label>
+						<button class="validate confirm flex row center">
+							<img src="assets/svg/check-green.svg">
+						</button>
+						<button class="validate decline flex row center">
+							<img src="assets/svg/cross-red.svg">
+						</button>
+					</div>
 				</div>
-				<div class="user">
-					<p class="username">Just a guy</p>
-				</div>
-			</div> -->
+			</div>
 		</div>
+		<!-- libraries -->
 		<script
 		src="https://code.jquery.com/jquery-3.6.0.min.js"
 		integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
 		crossorigin="anonymous"></script>
+		<script src="js/vue.dev.js"></script>
 		<script src="js/autosize.js"></script>
+
+		<!-- scripts -->
 		<script src="js/component.js"></script>
 		<script src="js/app.js"></script>
 	</body>
