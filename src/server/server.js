@@ -23,7 +23,7 @@ const rooms = [];
 
 //Functions
 function getCode() {
-	let length = 6;
+	let length = 4;
 	let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	let code = "";
 
@@ -50,34 +50,92 @@ function getCode() {
 	return code;
 }
 
+function findRoomsByUserId(userId) {
+	let _rooms = [];
+	for (var i = 0; i < rooms.length; i++) {
+		let room = rooms[i];
+		let user = room.users.find(u => u.id === userId);
+		if (user) {
+			_rooms.push(room);
+		}
+	}
+
+	return _rooms;
+}
+
 io.on("connection", socket => {
 	console.log(`${socket.id} has connected.`);
 
-	socket.on("userJoin", data => {
-		data = data || {};
+	socket.on("disconnect", () => {
+		let userRooms = findRoomsByUserId(socket.id);
+		for (var i = 0; i < userRooms.length; i++) {
+			let room = userRooms[i];
+			room.removeUser(socket.id);
+			io.in(room.code).emit("removeUser", socket.id);
+		}
+	});
 
-		if (!data.code) data.code = getCode();
+	socket.on("userJoin", (roomCode, userData) => {
+		userData = userData || {};
 
-		let room = rooms.find(rm => rm.code === data.code);
+		if (!roomCode) roomCode = getCode();
+
+		let room = rooms.find(rm => rm.code === roomCode);
 
 		//Create new room if the code is unique
 		if (!room) {
-			room = new Room(data.code);
+			room = new Room(roomCode);
 			rooms.push(room);
 
-			socket.emit("autoCode", data.code);
+			socket.emit("autoCode", roomCode);
 		}
 
-		socket.join(data.code);
+		//Leave currect rooms
+		let _rooms = findRoomsByUserId(socket.id);
+		for(var i = 0; i < _rooms.length; i++){
+			socket.leave(_rooms[i].code);
+		}
 
-		let user = {
-			id: socket.id,
-			name: data.name
-		};
+		socket.join(roomCode);
 
-		room.addUser(user);
+		//
+		let _user = room.users.find(u => u.id === socket.id);
+		if (!_user) {
+			let user = {
+				id: socket.id,
+				name: userData.name
+			};
+
+			room.addUser(user);
+		}
+
+		io.in(room.code).emit("updateUsers", room.users);
+		socket.emit("updateMessages", room.messages);
+		socket.emit("updateRoom", room);
 
 		console.log(room);
+	});
+
+	socket.on("changeUsername", username => {
+		let userRooms = findRoomsByUserId(socket.id);
+		for (var i = 0; i < userRooms.length; i++) {
+			let room = userRooms[i];
+
+			//Update users
+			let user = room.users.find(u => u.id === socket.id);
+			if (user) {
+				user.name = username;
+				io.in(room.code).emit("updateUser", user);
+			}
+
+			//Update messages username
+			for (var j = 0; j < room.messages.length; j++) {
+				let msg = room.messages[j];
+				if (msg.userId === socket.id) {
+					msg.username = user.name
+				}
+			}
+		}
 	});
 
 	socket.on("sendMessage", (roomCode, msgData) => {
