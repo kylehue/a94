@@ -5,18 +5,21 @@ $(".select").on("mousedown", event => {
 	itemWrapper.toggleClass("hidden");
 });
 
-//Select item
-$(".select").find(".select-itemWrapper .select-item").on("mousedown", event => {
+function _addSelectItemEvent(event) {
 	const button = $(event.target);
 	const parent = button.closest(".select");
 	const itemWrapper = parent.find(".select-itemWrapper");
 	parent[0].value = event.target.value;
+	parent.data("code", $(event.target).data("code"));
 	parent.find("label.select-value").text(button.text());
 	parent.trigger("change");
 	itemWrapper.addClass("hidden");
-});
+}
 
-function removeSpecialChars(str) {
+//Select item
+$(".select").find(".select-itemWrapper .select-item").on("mousedown", _addSelectItemEvent);
+
+function _removeSpecialChars(str) {
 	str = str.trim();
 	str = str.replace(" ", "");
 	str = str.replace(/[^\w\s]/gi, "");
@@ -31,10 +34,10 @@ $(".select").find("input.select-filter").on("input", event => {
 	const itemWrapper = input.closest(".select-itemWrapper");
 	const items = itemWrapper.find(".select-item");
 	let value = event.target.value;
-	value = removeSpecialChars(value);
+	value = _removeSpecialChars(value);
 	for (var i = 0; i < items.length; i++) {
 		let item = items[i];
-		let itemValue = removeSpecialChars(item.innerText);
+		let itemValue = _removeSpecialChars(item.innerText);
 		if (!itemValue.includes(value)) {
 			$(item).addClass("hidden");
 		} else {
@@ -43,7 +46,7 @@ $(".select").find("input.select-filter").on("input", event => {
 	}
 });
 
-function isDescendant(node, parentSelector) {
+function _isDescendant(node, parentSelector) {
 	let parent = node.offsetParent;
 	if (parent) {
 		while (!parent.matches(parentSelector)) {
@@ -63,7 +66,7 @@ function isDescendant(node, parentSelector) {
 //Hide select
 addEventListener("mousedown", event => {
 	const target = $(event.target);
-	if (!isDescendant(event.target, ".select") && !target.hasClass("select")) {
+	if (!_isDescendant(event.target, ".select") && !target.hasClass("select")) {
 		$(".select-itemWrapper").addClass("hidden");
 	}
 });

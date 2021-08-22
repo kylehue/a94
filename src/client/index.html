@@ -13,7 +13,7 @@
 		<link rel="stylesheet" type="text/css" href="css/body.css">
 	</head>
 	<body class="flex col">
-		<div id="roomApp" class="dialog flex col" v-if="!hidden">
+		<div id="roomApp" class="dialog absolute flex col" v-if="!hidden">
 			<div class="header flex row v-center">
 				<label class="title">Enter your code</label>
 				<button class="close flex center" v-on:click="hide"></button>
@@ -41,8 +41,8 @@
 					<label class="select-value">Rooms</label>
 					<img src="assets/svg/arrow-down.svg" class="select-arrow"></img>
 				</div>
-				<div class="select-itemWrapper hidden flex col h-center">
-					<input id="roomFilter" class="select-filter" placeholder="Filter" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
+				<div class="dialog select-itemWrapper hidden flex col h-center">
+					<input id="roomFilter" class="default select-filter" placeholder="Filter" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
 					<button value="321" class="select-item flex row v-center room">
 					<img src="assets/svg/chat-bubble.svg">
 					<span>Room A NIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII</span>
@@ -214,7 +214,7 @@
 			</div>
 			<div id="users" class="flex col h-center">
 				<div class="wrapper flex col">
-					<label class="title">Users (20)</label>
+					<label class="title">Users (<span id="userCount">1</span>)</label>
 					<div class="user flex row v-center">
 						<img class="user-icon" src="assets/svg/user.svg"></img>
 						<label class="username">Anon#591ffffffffffffffffffffffffffffffffffffffffffffffff2</label>

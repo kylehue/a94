@@ -14,11 +14,12 @@ class Client {
 
 	setUsername(username) {
 		this.username = username;
+		this.socket.emit("changeUsername", this.username);
 	}
 
 	join(code) {
-		this.socket.emit("userJoin", {
-			code
+		this.socket.emit("userJoin", code, {
+			name: this.username
 		});
 
 		this.roomCode = code;
@@ -27,6 +28,7 @@ class Client {
 	sendMessage(message) {
 		if (this.roomCode) {
 			this.socket.emit("sendMessage", this.roomCode, {
+				userId: this.socket.id,
 				username: this.username,
 				timestamp: Date.now(),
 				message

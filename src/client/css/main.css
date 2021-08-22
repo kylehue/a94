@@ -188,13 +188,6 @@ button.accent {
 
 .dialog {
 	background: var(--darko-c);
-	position: absolute;
-	z-index: 9999;
-	margin: auto;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
 
 	padding: 5px 10px;
 	width: fit-content;
@@ -204,6 +197,16 @@ button.accent {
 	box-sizing: border-box;
 	border-radius: 5px;
 	box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.2);
+}
+
+.dialog.absolute {
+	position: absolute;
+	z-index: 9999;
+	margin: auto;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
 }
 
 .dialog .header {

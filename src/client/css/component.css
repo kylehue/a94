@@ -36,29 +36,26 @@
 .select .select-itemWrapper {
 	position: absolute;
 	z-index: 9999;
-	box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.15);
 	top: calc(100% + 5px);
 	left: 0;
 	background: var(--darko-b);
-	border: 1px solid var(--darko-c);
 	overflow-x: hidden;
 	overflow-y: auto;
 	width: 200px;
 	height: fit-content;
 	max-height: 200px;
-	padding: 3px;
-	border-radius: 3px;
+	padding: 10px 5px;
 }
 
 .select .select-itemWrapper input.select-filter {
 	background: rgba(0, 0, 0, 0.15);
 	color: var(--white);
-	border: 1px solid var(--darko-c);
 	padding: 0 5px;
 	width: calc(100% - 15px);
-	height: 30px;
+	height: 35px;
 	margin-bottom: 5px;
 	border-radius: 3px;
+	flex-shrink: 0;
 }
 
 .select .select-itemWrapper button.select-item {
@@ -68,6 +65,7 @@
 	overflow: hidden;
 	padding-left: 10px;
 	cursor: pointer;
+	flex-shrink: 0;
 }
 
 .select .select-itemWrapper button.select-item:hover {

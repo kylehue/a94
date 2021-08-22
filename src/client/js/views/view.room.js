@@ -28,7 +28,7 @@ const roomApp = new Vue({
 		},
 		join() {
 			let code = $("#roomCode").val();
-			client.join(code);
+			events.emit("userJoin", code);
 			this.hide();
 		}
 	}
