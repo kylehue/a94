@@ -9,6 +9,13 @@ class Room {
 		};
 	}
 
+	removeUser(userId) {
+		let user = this.users.find(u => u.id === userId);
+		if (user) {
+			this.users.splice(this.users.indexOf(user), 1);
+		}
+	}
+
 	addUser(user) {
 		this.users.push(user);
 	}
