@@ -10,6 +10,10 @@ class Client {
 		this.socket.on("autoCode", code => {
 			this.roomCode = code;
 		});
+
+		this.socket.on("clientRoomUpdate", room => {
+			this.room = room;
+		});
 	}
 
 	setUsername(username) {
@@ -33,6 +37,12 @@ class Client {
 				timestamp: Date.now(),
 				message
 			});
+		}
+	}
+
+	sendFile(file) {
+		if (this.roomCode) {
+			
 		}
 	}
 }

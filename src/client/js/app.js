@@ -7,6 +7,7 @@ const client = require("./client.js");
 
 //Vue apps
 const roomApp = require("./views/view.room.js");
+const fileUploadApp = require("./views/view.fileUpload.js");
 
 //Public variables
 const __development__ = true;
@@ -65,7 +66,7 @@ function addMessage(msgData) {
 function addRoom(name, code) {
 	//Check if the user already joined the room
 	let existingRooms = $("#rooms .select-item");
-	for(var i = 0; i < existingRooms.length; i++){
+	for (var i = 0; i < existingRooms.length; i++) {
 		let rm = $(existingRooms[i]);
 
 		if (rm.data("code") === code) {
@@ -98,7 +99,7 @@ function enterRoom(roomData) {
 
 	//Load messages
 	let messages = roomData.messages;
-	for(var i = 0; i < messages.length; i++){
+	for (var i = 0; i < messages.length; i++) {
 		let msg = messages[i];
 		addMessage(msg);
 	}
@@ -108,7 +109,7 @@ function enterRoom(roomData) {
 
 	//Load users
 	let users = roomData.users;
-	for(var i = 0; i < users.length; i++){
+	for (var i = 0; i < users.length; i++) {
 		let user = users[i];
 		addUser(user);
 	}
@@ -140,13 +141,13 @@ function addUser(userData) {
 events.on("userJoin", code => {
 	client.join(code);
 	client.socket.once("autoCode", code => {
-		
+
 	});
 });
 
 client.socket.on("removeUser", userId => {
 	let users = $("#users .user");
-	for(var i = 0; i < users.length; i++){
+	for (var i = 0; i < users.length; i++) {
 		let user = $(users[i]);
 		if (user.data("id") === userId) {
 			user.remove();
@@ -157,7 +158,7 @@ client.socket.on("removeUser", userId => {
 client.socket.on("updateUser", _user => {
 	//Update username in users pane
 	let users = $("#users .user");
-	for(var i = 0; i < users.length; i++){
+	for (var i = 0; i < users.length; i++) {
 		let user = $(users[i]);
 		if (user.data("id") === _user.id) {
 			user.find(".username").text(_user.name);
@@ -166,7 +167,7 @@ client.socket.on("updateUser", _user => {
 
 	//Update username in chat app
 	let messages = $("#messages .message");
-	for(var i = 0; i < messages.length; i++){
+	for (var i = 0; i < messages.length; i++) {
 		let msg = $(messages[i]);
 		if (msg.data("userId") === _user.id) {
 			msg.find(".username").text(_user.name);
@@ -177,7 +178,7 @@ client.socket.on("updateUser", _user => {
 client.socket.on("updateUsers", users => {
 	$("#users .user").remove();
 	users.sort((a, b) => a.name - b.name);
-	for(var i = 0; i < users.length; i++){
+	for (var i = 0; i < users.length; i++) {
 		let user = users[i];
 		addUser(user);
 	}
@@ -188,7 +189,7 @@ client.socket.on("updateUsers", users => {
 client.socket.on("updateMessages", messages => {
 	$("#messages .message").remove();
 	messages.sort((a, b) => a.timestamp - b.timestamp);
-	for(var i = 0; i < messages.length; i++){
+	for (var i = 0; i < messages.length; i++) {
 		let msg = messages[i];
 		addMessage(msg);
 	}
@@ -212,12 +213,17 @@ $("#rooms").on("change", event => {
 	client.join(code);
 });
 
+$("#fileInput").on("change", event => {
+	let files = $("#fileInput")[0].files;
+	fileUploadApp.ask(files, client.room.options.name);
+	console.log(files);
+});
+
 //TODO
 /*
-*Ping server every 5mins
-*Remove unnecessary fonts
-*Select box adjust position when getting blocked
-*Icons for room, add room, upload file btn, file icon, user, confirm, decline, no room icon
-*Logo
-*/
-
+ *Ping server every 5mins
+ *Remove unnecessary fonts
+ *Select box adjust position when getting blocked
+ *Icons for room, add room, upload file btn, file icon, user, confirm, decline, no room icon
+ *Logo
+ */

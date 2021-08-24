@@ -1,0 +1,93 @@
+#roomApp {
+	width: 300px;
+}
+
+#roomApp input {
+	width: 100%;
+	height: 35px;
+}
+
+#fileUploadApp {
+	width: 300px;
+}
+
+#fileUploadApp .header .title {
+	max-width: calc(100% - 50px);
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#filePreviews {
+	width: 100%;
+	overflow: auto hidden;
+}
+
+#filePreviews .filePreview {
+	width: fit-content;
+	height: fit-content;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+#filePreviews .filePreview .imagePreview, #filePreviews .filePreview .blobPreview {
+	width: 100%;
+	height: 100%;
+	max-width: 200px;
+	max-height: 100px;
+	border-radius: 5px;
+}
+
+#filePreviews .filePreview button.fileRemove {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	margin: auto;
+
+	background: none;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	display: none;
+	
+	filter: brightness(0.1);
+	opacity: 0.5;
+}
+
+#filePreviews .filePreview p.fileName {
+	position: absolute;
+	bottom: 5px;
+	left: 0;
+	right: 0;
+	margin: auto;
+	width: calc(100% - 15px);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+
+	background: rgba(0, 0, 0, 0.35);
+	padding: 3px 5px;
+	border-radius: 3px;
+	line-height: 1;
+	user-select: none;
+	pointer-events: none;
+}
+
+#filePreviews .filePreview:hover {
+	filter: brightness(0.9);
+}
+
+#filePreviews .filePreview:active {
+	filter: brightness(0.8);
+}
+
+#filePreviews .filePreview:hover button.fileRemove {
+	display: block;
+}
+
+#filePreviews .filePreview button.fileRemove img {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+}

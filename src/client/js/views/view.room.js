@@ -17,11 +17,20 @@ function createCode() {
 const roomApp = new Vue({
 	el: "#roomApp",
 	data: {
-		hidden: false
+		hidden: true
 	},
 	methods: {
 		show() {
 			this.hidden = false;
+			this.$nextTick(() => {
+				$("#roomCode").focus();
+
+				$("#roomCode").on("keydown", event => {
+					if (event.keyCode == 13) {
+						this.join();
+					}
+				});
+			});
 		},
 		hide() {
 			this.hidden = true;

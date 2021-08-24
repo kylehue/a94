@@ -112,6 +112,7 @@ io.on("connection", socket => {
 		io.in(room.code).emit("updateUsers", room.users);
 		socket.emit("updateMessages", room.messages);
 		socket.emit("updateRoom", room);
+		socket.emit("clientRoomUpdate", room);
 
 		console.log(room);
 	});

@@ -11,15 +11,45 @@
 		<link rel="stylesheet" type="text/css" href="css/component.css">
 		<link rel="stylesheet" type="text/css" href="css/navigation.css">
 		<link rel="stylesheet" type="text/css" href="css/body.css">
+		<link rel="stylesheet" type="text/css" href="css/dialogs.css">
 	</head>
 	<body class="flex col">
+		<div id="fileUploadApp" class="dialog absolute flex col" v-if="!hidden">
+			<div class="header flex row v-center">
+				<label class="title">{{fileName}}</label>
+				<button class="close flex center" v-on:click="hide"></button>
+			</div>
+			<div id="filePreviews" class="body flex row v-center">
+				<div class="filePreview">
+					<img class="imagePreview" src="assets/images/2pliq2.jpg">
+					<p class="fileName">pesfjsaroj921-rj21-9jr21-fp39jf01f.png</p>
+					<button class="default fileRemove">
+						<img src="assets/svg/cross-alt.svg">
+					</button>
+				</div>
+				<div class="filePreview">
+					<img class="blobPreview" src="assets/svg/file.svg">
+					<p class="fileName">pesfjsaroj921-rj21-9jr21-fp39jf01f.png</p>
+					<button class="default fileRemove">
+						<img src="assets/svg/cross-alt.svg">
+					</button>
+				</div>
+			</div>
+			<div class="body flex">
+				<p class="note">Upload to {{roomName}}</p>
+			</div>
+			<div class="footer flex row v-center">
+				<button class="cancel default accent" v-on:click="hide">Cancel</button>
+				<button class="submit default accent" v-on:click="upload">Upload</button>
+			</div>
+		</div>
 		<div id="roomApp" class="dialog absolute flex col" v-if="!hidden">
 			<div class="header flex row v-center">
 				<label class="title">Enter your code</label>
 				<button class="close flex center" v-on:click="hide"></button>
 			</div>
 			<div class="body flex">
-				<p style="width:250px;" class="note">This will connect you to the people who have the same code.</p>
+				<p class="note">This will connect you to the people who have the same code.</p>
 			</div>
 			<div class="body flex">
 				<input id="roomCode" type="text" class="default" placeholder="Code" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">

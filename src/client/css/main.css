@@ -87,11 +87,14 @@ button.default {
 	cursor: pointer;
 	width: fit-content;
 	height: 35px;
+	padding: 0 10px;
+
+	transition-duration: 100ms;
+	transition-property: filter, background, color;
 }
 
 button.default:hover {
 	filter: brightness(1.05);
-	color: white;
 }
 
 button.default:active {
@@ -99,7 +102,6 @@ button.default:active {
 }
 
 button {
-	padding: 0 10px;
 	user-select: none;
 }
 
@@ -234,6 +236,7 @@ button.accent {
 	font-size: 14px;
 	user-select: none;
 	pointer-events: none;
+	white-space: nowrap;
 }
 
 .dialog .header button.close {
@@ -246,8 +249,9 @@ button.accent {
 }
 
 .dialog .header button.close::before {
-	content: "✕";
-	font-size: 10px;
+	content: url("./../assets/svg/cross.svg");
+	width: 50%;
+	height: 50%;
 }
 
 .dialog .header button.close:hover::before {
