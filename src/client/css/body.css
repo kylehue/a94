@@ -42,13 +42,50 @@
 	color: rgba(255, 255, 255, 0.25);
 }
 
-#messages .message img {
+#messages .message > img, #messages .message > video, #messages .message > audio {
 	margin-top: 5px;
 	border-radius: 5px;
 	cursor: pointer;
 	max-width: 250px;
 	max-height: 250px;
 	pointer-events: all;
+}
+
+#messages .message .file {
+	background: var(--darko-c);
+	margin-top: 5px;
+	border-radius: 5px;
+	cursor: pointer;
+	width: calc(100% - 50px);
+	max-width: 300px;
+	height: 50px;
+	padding: 5px 5px;
+	box-sizing: border-box;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#messages .message .file img {
+	height: 80%;
+	pointer-events: none;
+	margin-right: 2.5px;
+}
+
+#messages .message .fileInfoWrapper {
+	width: calc(100% - 40px);
+	overflow: hidden;
+}
+
+#messages .message .file label.file-name {
+	color: var(--white);
+	width: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#messages .message .file label.file-size {
+	font-size: 10px;
 }
 
 #textArea {
@@ -161,34 +198,4 @@
 #users .user button.validate img {
 	width: auto;
 	height: 60%;
-}
-
-#roomApp {
-	width: 300px;
-}
-
-#roomApp input {
-	width: 100%;
-	height: 35px;
-}
-
-#fileUploadApp {
-	width: 300px;
-}
-
-#fileUploadApp .header .title {
-	max-width: calc(100% - 50px);
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-#filePreviews {
-	width: 100%;
-	overflow: auto hidden;
-}
-
-#fileUploadApp img.filePreview {
-	max-width: 200px;
-	max-height: 100px;
-	border-radius: 5px;
 }

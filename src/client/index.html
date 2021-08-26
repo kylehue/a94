@@ -14,6 +14,7 @@
 		<link rel="stylesheet" type="text/css" href="css/dialogs.css">
 	</head>
 	<body class="flex col">
+		<a id="dl" style="display: none;"></a>
 		<div id="fileUploadApp" class="dialog absolute flex col" v-if="!hidden">
 			<div class="header flex row v-center">
 				<label class="title">{{fileName}}</label>
@@ -110,6 +111,40 @@
 						</div>
 						<p>hey there! what's up? btw here's an image of spongebob</p>
 						<img src="assets/images/2pliq2.jpg">
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">getrekt47</p>
+							<p class="timestamp">10:39 AM</p>
+						</div>
+						<p>video test</p>
+						<video controls>
+							<source src="assets/images/video0-3.mp4">
+						</video>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">getrekt47</p>
+							<p class="timestamp">10:39 AM</p>
+						</div>
+						<p>audio test</p>
+						<audio controls>
+							<source src="assets/images/bruh.mp3">
+						</audio>
+					</div>
+					<div class="message flex col">
+						<div class="flex row v-center">
+							<p class="username">getrekt47</p>
+							<p class="timestamp">10:39 AM</p>
+						</div>
+						<p>Sample file</p>
+						<div class="file flex row v-center">
+							<img src="assets/svg/file.svg">
+							<div class="fileInfoWrapper flex col">
+								<label class="note file-name">Sample.pngffffffffffffffffffffffffffff</label>
+								<label class="note file-size">512 kb</label>
+							</div>
+						</div>
 					</div>
 					<div class="message flex col">
 						<div class="flex row v-center">

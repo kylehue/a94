@@ -2,7 +2,7 @@ const _ids = [];
 let _lengthAuto;
 
 module.exports = {
-	uid: function (length) {
+	uid: function(length) {
 		length = length || 16;
 		let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 		let id = "";
@@ -53,5 +53,12 @@ module.exports = {
 		let val = n < min ? min : n;
 		val = val > max ? max : val;
 		return val;
+	},
+	bytesToSize: function(bytes) {
+		//https://stackoverflow.com/a/18650828/16446474
+		let sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+		if (bytes == 0) return "0 Byte";
+		let i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+		return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
 	}
 };
