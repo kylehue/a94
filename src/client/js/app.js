@@ -4,6 +4,7 @@ const mouse = require("../../lib/mouse.js");
 const key = require("../../lib/key.js");
 const utils = require("../../lib/utils.js");
 const client = require("./client.js");
+const streamsaver = require("streamsaver");
 
 //Vue apps
 const roomApp = require("./views/view.room.js");
@@ -33,6 +34,10 @@ $("#composeMessage").on("keydown", event => {
 	}
 });
 
+addEventListener("unload", function() {
+	if (writableStream) writableStream.abort();
+});
+
 //
 function addMessage(msgData) {
 	let wrapper = $(document.createElement("div"));
@@ -57,6 +62,171 @@ function addMessage(msgData) {
 	let message = $(document.createElement("p"));
 	message.text(msgData.message);
 	wrapper.append(headWrapper, message);
+
+	let messagesWrapper = $("#chatApp #messages");
+	messagesWrapper.append(wrapper);
+	messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
+}
+
+function addFile(msgData, file) {
+	let wrapper = $(document.createElement("div"));
+	wrapper.addClass("message flex col");
+	wrapper.data("userId", msgData.userId);
+
+	let headWrapper = $(document.createElement("div"));
+	headWrapper.addClass("flex row v-center");
+
+	let username = $(document.createElement("p"));
+	username.addClass("username");
+	username.text(msgData.username);
+
+	let timestamp = $(document.createElement("p"));
+	timestamp.addClass("timestamp");
+
+	msgData.timestamp = new Date(msgData.timestamp).toLocaleTimeString();
+	msgData.timestamp = msgData.timestamp.replace(/:[0-9]\d\s/, " ");
+	timestamp.text(msgData.timestamp);
+	headWrapper.append(username, timestamp);
+
+	let fileWrapper = $(document.createElement("div"));
+	fileWrapper.addClass("file flex row v-center");
+	fileWrapper.attr("title", file.name);
+
+	fileWrapper.on("click", () => {
+		try {
+			let blob = new Blob([file]);
+			const fileStream = streamsaver.createWriteStream(`${file.name}`, {
+				size: blob.size
+			});
+
+			const readableStream = blob.stream();
+			if (window.WritableStream && readableStream.pipeTo) {
+				return readableStream.pipeTo(fileStream);
+			}
+
+		} catch (e) {
+			console.warn(e);
+		}
+	});
+
+	let fileIcon = $(document.createElement("img"));
+	fileIcon.attr("src", "assets/svg/file.svg");
+
+	let fileInfoWrapper = $(document.createElement("div"));
+	fileInfoWrapper.addClass("fileInfoWrapper flex col");
+
+	let fileName = $(document.createElement("label"));
+	fileName.text(file.name);
+	fileName.addClass("note file-name");
+
+	let fileSize = $(document.createElement("label"));
+	fileSize.text(utils.bytesToSize(file.size));
+	fileSize.addClass("note file-size");
+
+	fileInfoWrapper.append(fileName, fileSize);
+	fileWrapper.append(fileIcon, fileInfoWrapper);
+
+	wrapper.append(headWrapper, fileWrapper);
+
+	let messagesWrapper = $("#chatApp #messages");
+	messagesWrapper.append(wrapper);
+	messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
+}
+
+function addImage(msgData, imgURL) {
+	let wrapper = $(document.createElement("div"));
+	wrapper.addClass("message flex col");
+	wrapper.data("userId", msgData.userId);
+
+	let headWrapper = $(document.createElement("div"));
+	headWrapper.addClass("flex row v-center");
+
+	let username = $(document.createElement("p"));
+	username.addClass("username");
+	username.text(msgData.username);
+
+	let timestamp = $(document.createElement("p"));
+	timestamp.addClass("timestamp");
+
+	msgData.timestamp = new Date(msgData.timestamp).toLocaleTimeString();
+	msgData.timestamp = msgData.timestamp.replace(/:[0-9]\d\s/, " ");
+	timestamp.text(msgData.timestamp);
+	headWrapper.append(username, timestamp);
+
+	let image = $(document.createElement("img"));
+	image.attr("src", imgURL);
+
+	wrapper.append(headWrapper, image);
+
+	let messagesWrapper = $("#chatApp #messages");
+	messagesWrapper.append(wrapper);
+	messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
+}
+
+function addVideo(msgData, vidURL) {
+	let wrapper = $(document.createElement("div"));
+	wrapper.addClass("message flex col");
+	wrapper.data("userId", msgData.userId);
+
+	let headWrapper = $(document.createElement("div"));
+	headWrapper.addClass("flex row v-center");
+
+	let username = $(document.createElement("p"));
+	username.addClass("username");
+	username.text(msgData.username);
+
+	let timestamp = $(document.createElement("p"));
+	timestamp.addClass("timestamp");
+
+	msgData.timestamp = new Date(msgData.timestamp).toLocaleTimeString();
+	msgData.timestamp = msgData.timestamp.replace(/:[0-9]\d\s/, " ");
+	timestamp.text(msgData.timestamp);
+	headWrapper.append(username, timestamp);
+
+	let video = $(document.createElement("video"));
+	video.attr("controls", "");
+
+	let source = $(document.createElement("source"));
+	source.attr("src", vidURL);
+
+	video.append(source);
+
+	wrapper.append(headWrapper, video);
+
+	let messagesWrapper = $("#chatApp #messages");
+	messagesWrapper.append(wrapper);
+	messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
+}
+
+function addAudio(msgData, audURL) {
+	let wrapper = $(document.createElement("div"));
+	wrapper.addClass("message flex col");
+	wrapper.data("userId", msgData.userId);
+
+	let headWrapper = $(document.createElement("div"));
+	headWrapper.addClass("flex row v-center");
+
+	let username = $(document.createElement("p"));
+	username.addClass("username");
+	username.text(msgData.username);
+
+	let timestamp = $(document.createElement("p"));
+	timestamp.addClass("timestamp");
+
+	msgData.timestamp = new Date(msgData.timestamp).toLocaleTimeString();
+	msgData.timestamp = msgData.timestamp.replace(/:[0-9]\d\s/, " ");
+	timestamp.text(msgData.timestamp);
+	headWrapper.append(username, timestamp);
+
+	let audio = $(document.createElement("audio"));
+	audio.attr("controls", "");
+
+	let source = $(document.createElement("source"));
+	source.attr("src", audURL);
+
+	audio.append(source);
+
+	wrapper.append(headWrapper, audio);
 
 	let messagesWrapper = $("#chatApp #messages");
 	messagesWrapper.append(wrapper);
@@ -219,11 +389,54 @@ $("#fileInput").on("change", event => {
 	console.log(files);
 });
 
+client.socket.on("newFile", msgData => {
+	let attachment = msgData.attachment;
+	let metadata = attachment.metadata;
+	let file = new File([attachment.buffer], metadata.name, {
+		lastModified: metadata.lastModified,
+		type: metadata.type
+	});
+
+	let url = URL.createObjectURL(file);
+
+	if (file.type.startsWith("image")) {
+		addImage(msgData, url);
+	} else if (file.type.startsWith("video")) {
+		addVideo(msgData, url);
+	} else if (file.type.startsWith("audio")) {
+		addAudio(msgData, url);
+	} else {
+		addFile(msgData, file);
+	}
+
+	console.log(file);
+	console.log(msgData);
+});
+/*
+client.socket.on("test", attachment => {
+	let metadata = attachment.metadata;
+	attachment.buffer = new Uint8Array(attachment.buffer);
+	let file = new File([attachment.buffer], metadata.name, {
+		lastModified: metadata.lastModified,
+		type: metadata.type
+	});
+
+	addFile({}, file);
+
+	console.log("ATTACHMENT")
+	console.log(attachment);
+	console.log("FILE")
+	console.log(file);
+})
+*/
 //TODO
 /*
+ *Load blob messages by using their ids
  *Ping server every 5mins
  *Remove unnecessary fonts
  *Select box adjust position when getting blocked
+ *Character limit
+ *File size limit
  *Icons for room, add room, upload file btn, file icon, user, confirm, decline, no room icon
  *Logo
  */

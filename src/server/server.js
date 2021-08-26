@@ -90,9 +90,9 @@ io.on("connection", socket => {
 			socket.emit("autoCode", roomCode);
 		}
 
-		//Leave currect rooms
+		//Leave current rooms
 		let _rooms = findRoomsByUserId(socket.id);
-		for(var i = 0; i < _rooms.length; i++){
+		for (var i = 0; i < _rooms.length; i++) {
 			socket.leave(_rooms[i].code);
 		}
 
@@ -149,4 +149,64 @@ io.on("connection", socket => {
 			io.in(room.code).emit("newMessage", msgData);
 		}
 	});
+
+	socket.on("uploadStart", (activityId, roomCode, msgData, metadata) => {
+		let room = rooms.find(rm => rm.code === roomCode);
+
+		if (room) {
+			let file = room.createFile(metadata);
+			socket.emit("uploadNext" + activityId, file.size);
+			socket.on("uploadProgress" + activityId, chunk => {
+				file.addChunk(chunk);
+
+				if (file.size < file.metadata.size) {
+					console.log("UPLOADING " + activityId + "...");
+					socket.emit("uploadNext" + activityId, file.size);
+				} else {
+					console.log("UPLOADED " + activityId + "!");
+					let attachment = {
+						buffer: new Uint8Array(file.buffer),
+						metadata
+					};
+
+					msgData.attachment = attachment;
+					io.in(room.code).emit("newFile", msgData);
+				}
+			});
+		}
+	});
+
+	/*const ss = require("socket.io-stream");
+	const fs = require("fs");
+
+	socket.on("sendFile", (roomCode, msgData) => {
+		var stream = ss.createStream();
+		stream.on("end", function(e) {
+			console.log("file sent");
+			console.log(e);
+		});
+
+		ss(socket).emit("sending", stream);
+		fs.createReadStream(msgData.attachment.metadata.name).pipe(stream);
+	});*/
+
+	/*socket.on("sendFile", (roomCode, msgData) => {
+		let room = rooms.find(rm => rm.code === roomCode);
+
+		console.log(roomCode, msgData);
+
+		if (room) {
+			room.addMessage(msgData);
+			io.in(room.code).emit("newFile", msgData);
+		}
+	});*/
+
+
+
+
+
+
+
+
+
 });
