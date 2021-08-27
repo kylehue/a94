@@ -14,7 +14,26 @@
 		<link rel="stylesheet" type="text/css" href="css/dialogs.css">
 	</head>
 	<body class="flex col">
-		<a id="dl" style="display: none;"></a>
+		<div id="overlay" class="absolute hidden"></div>
+		<div id="imagePreviewApp" class="absolute flex center hidden">
+			<img src="assets/images/2pliq2.jpg">
+		</div>
+		<div id="uploadsList" class="dialog hidden">
+			<div id="uploadsWrapper" class="body flex col">
+				<!-- <div class="upload flex row v-center">
+						<img src="assets/svg/file.svg">
+						<div class="upload-info flex col">
+								<label class="note upload-name">Sample.pngffffffffffffffffffffffffffff</label>
+								<div class="upload-progress-wrapper">
+										<div class="upload-progress"></div>
+								</div>
+						</div>
+						<button class="upload-cancel default flex center">
+							<img src="assets/svg/cross-alt.svg">
+						</button>
+				</div> -->
+			</div>
+		</div>
 		<div id="fileUploadApp" class="dialog absolute flex col" v-if="!hidden">
 			<div class="header flex row v-center">
 				<label class="title">{{fileName}}</label>
@@ -25,14 +44,14 @@
 					<img class="imagePreview" src="assets/images/2pliq2.jpg">
 					<p class="fileName">pesfjsaroj921-rj21-9jr21-fp39jf01f.png</p>
 					<button class="default fileRemove">
-						<img src="assets/svg/cross-alt.svg">
+					<img src="assets/svg/cross-alt.svg">
 					</button>
 				</div>
 				<div class="filePreview">
 					<img class="blobPreview" src="assets/svg/file.svg">
 					<p class="fileName">pesfjsaroj921-rj21-9jr21-fp39jf01f.png</p>
 					<button class="default fileRemove">
-						<img src="assets/svg/cross-alt.svg">
+					<img src="assets/svg/cross-alt.svg">
 					</button>
 				</div>
 			</div>
@@ -95,6 +114,9 @@
 			<input id="username" class="default" placeholder="Username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
 		</div>
 		<div id="body" class="flex row">
+			<div id="dropOverlay" class="absolute flex center" style="visibility: hidden;">
+				<img src="assets/svg/drop.svg">
+			</div>
 			<div id="chatApp" class="flex col">
 				<div id="messages" class="flex col">
 					<div class="message flex col">
@@ -288,10 +310,10 @@
 						<img class="user-icon" src="assets/svg/user.svg"></img>
 						<label class="username">Anon#5912</label>
 						<button class="validate confirm flex row center">
-							<img src="assets/svg/check-green.svg">
+						<img src="assets/svg/check-green.svg">
 						</button>
 						<button class="validate decline flex row center">
-							<img src="assets/svg/cross-red.svg">
+						<img src="assets/svg/cross-red.svg">
 						</button>
 					</div>
 				</div>
@@ -304,7 +326,6 @@
 		crossorigin="anonymous"></script>
 		<script src="js/vue.dev.js"></script>
 		<script src="js/autosize.js"></script>
-
 		<!-- scripts -->
 		<script src="js/component.js"></script>
 		<script src="js/app.js"></script>

@@ -70,9 +70,13 @@ const fileUploadApp = new Vue({
 					filePreviews.scrollLeft += event.deltaY;
 				});
 			});
+
+			$("#overlay").removeClass("hidden");
 		},
 		hide() {
 			this.hidden = true;
+
+			$("#overlay").addClass("hidden");
 		},
 		ask(files, roomName) {
 			if (!files.length) return;
@@ -119,6 +123,8 @@ const fileUploadApp = new Vue({
 				let file = _filesCache[i];
 				client.sendFile(file);
 			}
+
+			this.hide();
 		}
 	}
 });

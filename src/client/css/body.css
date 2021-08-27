@@ -46,9 +46,12 @@
 	margin-top: 5px;
 	border-radius: 5px;
 	cursor: pointer;
-	max-width: 250px;
-	max-height: 250px;
+	height: 250px;
 	pointer-events: all;
+}
+
+#messages .message > audio {
+	height: 40px;
 }
 
 #messages .message .file {
@@ -198,4 +201,43 @@
 #users .user button.validate img {
 	width: auto;
 	height: 60%;
+}
+
+#overlay {
+	background: rgba(0, 0, 0, 0.5);
+	z-index: 9990;
+	width: 100vw;
+	height: 100vh;
+	pointer-events: all;
+	user-select: none;
+}
+
+#imagePreviewApp {
+	width: calc(95% - 100px);
+	height: auto;
+	min-width: 200px;
+	max-height: 300px;
+}
+
+#imagePreviewApp img{
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	pointer-events: all;
+	user-select: all;
+}
+
+#dropOverlay {
+	background: var(--darko-b);
+	z-index: 99991;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	user-select: none;
+}
+
+#dropOverlay img {
+	width: 100px;
+	pointer-events: none;
+	user-select: none;
 }

@@ -31,9 +31,13 @@ const roomApp = new Vue({
 					}
 				});
 			});
+
+			$("#overlay").removeClass("hidden");
 		},
 		hide() {
 			this.hidden = true;
+
+			$("#overlay").addClass("hidden");
 		},
 		join() {
 			let code = $("#roomCode").val();

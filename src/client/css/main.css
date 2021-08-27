@@ -113,7 +113,6 @@ button * {
 button.default img {
 	width: auto;
 	height: 30%;
-	margin-right: 10px;
 }
 
 button span {
@@ -124,6 +123,7 @@ button span {
 	text-align: left;
 	user-select: none;
 	pointer-events: none;
+	margin-left: 10px;
 }
 
 button.accent {
@@ -201,7 +201,7 @@ button.accent {
 	box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.2);
 }
 
-.dialog.absolute {
+.absolute {
 	position: absolute;
 	z-index: 9999;
 	margin: auto;
