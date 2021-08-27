@@ -96,23 +96,36 @@ io.on("connection", socket => {
 			socket.leave(_rooms[i].code);
 		}
 
-		socket.join(roomCode);
-
-		//
+		//Add user to room
 		let _user = room.users.find(u => u.id === socket.id);
 		if (!_user) {
 			let user = {
 				id: socket.id,
-				name: userData.name
+				name: userData.name,
+				admin: false
 			};
+
+			if (!room.users.length) {
+				user.admin = true;
+			}
+
+			if (room.options.locked) {
+				user.pending = true;
+			}
 
 			room.addUser(user);
 		}
 
 		io.in(room.code).emit("updateUsers", room.users);
-		socket.emit("updateMessages", room.messages);
-		socket.emit("updateRoom", room);
-		socket.emit("clientRoomUpdate", room);
+
+		if (!room.options.locked) {
+			socket.join(room.code);
+			socket.emit("updateMessages", room.messages);
+			socket.emit("updateRoom", room);
+			socket.emit("clientRoomUpdate", room);
+		} else {
+			socket.emit("updateRoomPending", room);
+		}
 
 		console.log(room);
 	});
@@ -145,8 +158,42 @@ io.on("connection", socket => {
 		console.log(roomCode, msgData);
 
 		if (room) {
+			let user = room.getUser(socket.id);
+
 			room.addMessage(msgData);
 			io.in(room.code).emit("newMessage", msgData);
+
+			//Check if the message is a command
+			if (user) {
+				if (user.admin) {
+					let msgTrim = msgData.message.trim().toLowerCase();
+					let serverMsg = {
+						username: "Server",
+						timestamp: Date.now(),
+						message: "",
+						type: "server"
+					};
+
+					let sendMsg = false;
+
+					if (msgTrim == "/lock") {
+						room.options.locked = true;
+						sendMsg = true;
+						serverMsg.message = "Room is now locked.";
+					}
+
+					if (msgTrim == "/unlock") {
+						room.options.locked = false;
+						sendMsg = true;
+						serverMsg.message = "Room is now unlocked.";
+					}
+
+					if (sendMsg) {
+						io.in(room.code).emit("serverMessage", serverMsg);
+						room.addMessage(serverMsg);
+					}
+				}
+			}
 		}
 	});
 

@@ -25,7 +25,8 @@ $("#username").on("focusout", event => {
 $("#composeMessage").on("keydown", event => {
 	const input = $(event.target);
 	if (event.keyCode == 13 && !event.shiftKey) {
-		client.sendMessage(input.val());
+		let msg = input.val();
+		if (msg.length) client.sendMessage(msg);
 
 		event.preventDefault();
 		input.val("");
@@ -43,6 +44,10 @@ function UI_addMessage(msgData) {
 	let wrapper = $(document.createElement("div"));
 	wrapper.addClass("message flex col");
 	wrapper.data("userId", msgData.userId);
+
+	if (msgData.type == "server") {
+		wrapper.addClass("server");
+	}
 
 	let headWrapper = $(document.createElement("div"));
 	headWrapper.addClass("flex row v-center");
@@ -239,7 +244,7 @@ function UI_addAudio(msgData, audURL) {
 	messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
 }
 
-function addRoom(name, code) {
+function UI_addRoom(name, code) {
 	//Check if the user already joined the room
 	let existingRooms = $("#rooms .select-item");
 	for (var i = 0; i < existingRooms.length; i++) {
@@ -405,13 +410,27 @@ client.socket.on("updateMessages", messages => {
 client.socket.on("newFile", addMessageFiles);
 
 client.socket.on("updateRoom", roomData => {
+	console.log("updateRoom");
 	console.log(roomData)
-	addRoom(roomData.options.name, roomData.code);
+	UI_addRoom(roomData.options.name, roomData.code);
 	//enterRoom(roomData);
 });
 
+client.socket.on("updateRoomPending", roomData => {
+	console.log("updateRoomPending");
+	console.log(roomData)
+	$("#lockOverlay").removeClass("hidden");
+});
+
 client.socket.on("newMessage", msgData => {
+	console.log("newMessage");
 	console.log(msgData)
+	UI_addMessage(msgData);
+});
+
+client.socket.on("serverMessage", msgData => {
+	console.log("serverMessage");
+	console.log(msgData);
 	UI_addMessage(msgData);
 });
 
@@ -442,19 +461,26 @@ $("#overlay, #imagePreviewApp").on("click", () => {
 	}
 });
 
+//Enable drag and drop files
 let lastDropTarget = null;
 
 $(window).on("drop", event => {
 	event.preventDefault();
-	let files = event.originalEvent.dataTransfer.files;
-	fileUploadApp.ask(files, client.room.options.name);
-	
+	var dt = event.originalEvent.dataTransfer;
+	if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1 : dt.types.contains('Files'))) {
+		let files = dt.files;
+		fileUploadApp.ask(files, client.room.options.name);
+	}
+
 	$("#dropOverlay").css("visibility", "hidden");
 });
 
 $(window).on("dragenter", event => {
-	$("#dropOverlay").css("visibility", "visible");
-	lastDropTarget = event.target;
+	var dt = event.originalEvent.dataTransfer;
+	if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1 : dt.types.contains('Files'))) {
+		$("#dropOverlay").css("visibility", "visible");
+		lastDropTarget = event.target;
+	}
 });
 
 $(window).on("dragleave", event => {
@@ -467,6 +493,7 @@ $(window).on("dragover", event => {
 	event.preventDefault();
 });
 
+//Handle escape keys
 window.addEventListener("keydown", event => {
 	console.log(event.keyCode);
 	let escapeKeyCodes = [27, 13, 32];
