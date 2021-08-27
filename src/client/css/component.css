@@ -35,7 +35,7 @@
 
 .select .select-itemWrapper {
 	position: absolute;
-	z-index: 9999;
+	z-index: 999999;
 	top: calc(100% + 5px);
 	left: 0;
 	background: var(--darko-b);

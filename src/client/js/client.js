@@ -78,7 +78,8 @@ class Client {
 				userId: this.socket.id,
 				username: this.username,
 				timestamp: Date.now(),
-				message
+				message,
+				type: "client"
 			};
 
 			this.socket.emit("sendMessage", this.roomCode, msgData);

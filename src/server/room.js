@@ -24,7 +24,8 @@ class Room {
 		this.users = [];
 
 		this.options = {
-			name: code
+			name: code,
+			locked: false
 		};
 
 		this.files = [];
@@ -39,6 +40,13 @@ class Room {
 
 	addUser(user) {
 		this.users.push(user);
+	}
+
+	getUser(userId) {
+		let user = this.users.find(u => u.id === userId);
+		if (user) {
+			return user;
+		}
 	}
 
 	addMessage(data) {

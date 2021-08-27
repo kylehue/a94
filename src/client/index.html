@@ -34,6 +34,7 @@
 				</div> -->
 			</div>
 		</div>
+		
 		<div id="fileUploadApp" class="dialog absolute flex col" v-if="!hidden">
 			<div class="header flex row v-center">
 				<label class="title">{{fileName}}</label>
@@ -114,6 +115,12 @@
 			<input id="username" class="default" placeholder="Username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
 		</div>
 		<div id="body" class="flex row">
+			<div id="lockOverlay" class="absolute flex center hidden">
+				<div class="flex col h-center">
+					<img src="assets/svg/lock.svg">
+					<p>This room is locked.</p>
+				</div>
+			</div>
 			<div id="dropOverlay" class="absolute flex center" style="visibility: hidden;">
 				<img src="assets/svg/drop.svg">
 			</div>

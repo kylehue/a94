@@ -1,6 +1,7 @@
 :root {
 	--white: #d3d6d9;
 	--accent: #3c69fc;
+	--warning: #fff587;
 
 	--darko-a: #1b1d20;
 	--darko-b: #25272b;
@@ -277,3 +278,4 @@ button.accent {
 	margin-left: auto;
 	min-width: 90px;
 }
+

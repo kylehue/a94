@@ -95,3 +95,4 @@ $(".custom-file > button").on("click", event => {
 	const input = parent.find("input[type='file']");
 	input.trigger("click");
 });
+
