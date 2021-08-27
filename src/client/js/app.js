@@ -39,7 +39,7 @@ addEventListener("unload", function() {
 });
 
 //
-function addMessage(msgData) {
+function UI_addMessage(msgData) {
 	let wrapper = $(document.createElement("div"));
 	wrapper.addClass("message flex col");
 	wrapper.data("userId", msgData.userId);
@@ -68,7 +68,7 @@ function addMessage(msgData) {
 	messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
 }
 
-function addFile(msgData, file) {
+function UI_addFile(msgData, file) {
 	let wrapper = $(document.createElement("div"));
 	wrapper.addClass("message flex col");
 	wrapper.data("userId", msgData.userId);
@@ -133,7 +133,7 @@ function addFile(msgData, file) {
 	messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
 }
 
-function addImage(msgData, imgURL) {
+function UI_addImage(msgData, imgURL) {
 	let wrapper = $(document.createElement("div"));
 	wrapper.addClass("message flex col");
 	wrapper.data("userId", msgData.userId);
@@ -156,6 +156,12 @@ function addImage(msgData, imgURL) {
 	let image = $(document.createElement("img"));
 	image.attr("src", imgURL);
 
+	image.on("click", () => {
+		$("#overlay").removeClass("hidden");
+		$("#imagePreviewApp").removeClass("hidden");
+		$("#imagePreviewApp img").attr("src", imgURL);
+	});
+
 	wrapper.append(headWrapper, image);
 
 	let messagesWrapper = $("#chatApp #messages");
@@ -163,7 +169,7 @@ function addImage(msgData, imgURL) {
 	messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
 }
 
-function addVideo(msgData, vidURL) {
+function UI_addVideo(msgData, vidURL) {
 	let wrapper = $(document.createElement("div"));
 	wrapper.addClass("message flex col");
 	wrapper.data("userId", msgData.userId);
@@ -198,7 +204,7 @@ function addVideo(msgData, vidURL) {
 	messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
 }
 
-function addAudio(msgData, audURL) {
+function UI_addAudio(msgData, audURL) {
 	let wrapper = $(document.createElement("div"));
 	wrapper.addClass("message flex col");
 	wrapper.data("userId", msgData.userId);
@@ -271,7 +277,7 @@ function enterRoom(roomData) {
 	let messages = roomData.messages;
 	for (var i = 0; i < messages.length; i++) {
 		let msg = messages[i];
-		addMessage(msg);
+		UI_addMessage(msg);
 	}
 
 	//Clear users
@@ -356,16 +362,47 @@ client.socket.on("updateUsers", users => {
 	updateUserCount(users.length);
 });
 
+function addMessageFiles(msgData) {
+	let attachment = msgData.attachment;
+	let metadata = attachment.metadata;
+	let file = new File([attachment.buffer], metadata.name, {
+		lastModified: metadata.lastModified,
+		type: metadata.type
+	});
+
+	let url = URL.createObjectURL(file);
+
+	if (file.type.startsWith("image")) {
+		UI_addImage(msgData, url);
+	} else if (file.type.startsWith("video")) {
+		UI_addVideo(msgData, url);
+	} else if (file.type.startsWith("audio")) {
+		UI_addAudio(msgData, url);
+	} else {
+		UI_addFile(msgData, file);
+	}
+
+	console.log(file);
+	console.log(msgData);
+}
+
 client.socket.on("updateMessages", messages => {
 	$("#messages .message").remove();
 	messages.sort((a, b) => a.timestamp - b.timestamp);
 	for (var i = 0; i < messages.length; i++) {
 		let msg = messages[i];
-		addMessage(msg);
+
+		if (msg.attachment) {
+			addMessageFiles(msg);
+		} else {
+			UI_addMessage(msg);
+		}
 	}
 
 	console.log(messages);
 });
+
+client.socket.on("newFile", addMessageFiles);
 
 client.socket.on("updateRoom", roomData => {
 	console.log(roomData)
@@ -375,7 +412,7 @@ client.socket.on("updateRoom", roomData => {
 
 client.socket.on("newMessage", msgData => {
 	console.log(msgData)
-	addMessage(msgData);
+	UI_addMessage(msgData);
 });
 
 $("#rooms").on("change", event => {
@@ -389,50 +426,60 @@ $("#fileInput").on("change", event => {
 	console.log(files);
 });
 
-client.socket.on("newFile", msgData => {
-	let attachment = msgData.attachment;
-	let metadata = attachment.metadata;
-	let file = new File([attachment.buffer], metadata.name, {
-		lastModified: metadata.lastModified,
-		type: metadata.type
-	});
-
-	let url = URL.createObjectURL(file);
-
-	if (file.type.startsWith("image")) {
-		addImage(msgData, url);
-	} else if (file.type.startsWith("video")) {
-		addVideo(msgData, url);
-	} else if (file.type.startsWith("audio")) {
-		addAudio(msgData, url);
+$("#uploadsWrapper").on("change", () => {
+	let uploads = $("#uploadsWrapper .upload");
+	if (!uploads.length) {
+		$("#uploadsList").addClass("hidden");
 	} else {
-		addFile(msgData, file);
+		$("#uploadsList").removeClass("hidden");
 	}
-
-	console.log(file);
-	console.log(msgData);
 });
-/*
-client.socket.on("test", attachment => {
-	let metadata = attachment.metadata;
-	attachment.buffer = new Uint8Array(attachment.buffer);
-	let file = new File([attachment.buffer], metadata.name, {
-		lastModified: metadata.lastModified,
-		type: metadata.type
-	});
 
-	addFile({}, file);
+$("#overlay, #imagePreviewApp").on("click", () => {
+	if (!$("#imagePreviewApp").hasClass("hidden")) {
+		$("#imagePreviewApp").addClass("hidden");
+		$("#overlay").addClass("hidden");
+	}
+});
 
-	console.log("ATTACHMENT")
-	console.log(attachment);
-	console.log("FILE")
-	console.log(file);
-})
-*/
+let lastDropTarget = null;
+
+$(window).on("drop", event => {
+	event.preventDefault();
+	let files = event.originalEvent.dataTransfer.files;
+	fileUploadApp.ask(files, client.room.options.name);
+	
+	$("#dropOverlay").css("visibility", "hidden");
+});
+
+$(window).on("dragenter", event => {
+	$("#dropOverlay").css("visibility", "visible");
+	lastDropTarget = event.target;
+});
+
+$(window).on("dragleave", event => {
+	if (event.target == lastDropTarget || event.target == document) {
+		$("#dropOverlay").css("visibility", "hidden");
+	}
+});
+
+$(window).on("dragover", event => {
+	event.preventDefault();
+});
+
+window.addEventListener("keydown", event => {
+	console.log(event.keyCode);
+	let escapeKeyCodes = [27, 13, 32];
+	if (escapeKeyCodes.includes(event.keyCode)) {
+		$("#imagePreviewApp").addClass("hidden");
+		$("#overlay").addClass("hidden");
+	}
+});
+
 //TODO
 /*
- *Load blob messages by using their ids
- *Ping server every 5mins
+ *File messages inaccurate order
+ *Progress bar on upload
  *Remove unnecessary fonts
  *Select box adjust position when getting blocked
  *Character limit
