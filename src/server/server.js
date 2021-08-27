@@ -150,27 +150,40 @@ io.on("connection", socket => {
 		}
 	});
 
-	socket.on("uploadStart", (activityId, roomCode, msgData, metadata) => {
+	socket.on("uploadStart", (uploadId, roomCode, msgData, metadata) => {
 		let room = rooms.find(rm => rm.code === roomCode);
 
 		if (room) {
 			let file = room.createFile(metadata);
-			socket.emit("uploadNext" + activityId, file.size);
-			socket.on("uploadProgress" + activityId, chunk => {
+			let destroyed = false;
+
+			socket.on("uploadDestroy" + uploadId, () => {
+				destroyed = true;
+				socket.emit("uploadFinish" + uploadId);
+			});
+
+			socket.emit("uploadNext" + uploadId, file.size);
+			socket.on("uploadProgress" + uploadId, chunk => {
+				if (destroyed) return;
+
 				file.addChunk(chunk);
 
 				if (file.size < file.metadata.size) {
-					console.log("UPLOADING " + activityId + "...");
-					socket.emit("uploadNext" + activityId, file.size);
+					console.log("UPLOADING " + uploadId + "...");
+					socket.emit("uploadNext" + uploadId, file.size);
 				} else {
-					console.log("UPLOADED " + activityId + "!");
+					console.log("UPLOADED " + uploadId + "!");
 					let attachment = {
 						buffer: new Uint8Array(file.buffer),
 						metadata
 					};
 
 					msgData.attachment = attachment;
+					msgData.timestamp = Date.now();
+
+					room.addMessage(msgData);
 					io.in(room.code).emit("newFile", msgData);
+					socket.emit("uploadFinish" + uploadId);
 				}
 			});
 		}

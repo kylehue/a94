@@ -1,6 +1,48 @@
 const io = require("socket.io-client");
 const utils = require("./../../lib/utils.js");
 
+function UI_addUpload(fileId, fileName, progress) {
+	let uploadWrapper = $(document.createElement("div"));
+	uploadWrapper.addClass("upload flex row v-center");
+	uploadWrapper.data("fileId", fileId);
+
+	let uploadIcon = $(document.createElement("img"));
+	uploadIcon.attr("src", "assets/svg/file.svg");
+
+	let uploadInfoWrapper = $(document.createElement("div"));
+	uploadInfoWrapper.addClass("upload-info flex col");
+
+	let uploadName = $(document.createElement("label"));
+	uploadName.addClass("note upload-name");
+	uploadName.text(fileName);
+
+	let uploadProgressWrapper = $(document.createElement("div"));
+	uploadProgressWrapper.addClass("upload-progress-wrapper");
+
+	let uploadProgress = $(document.createElement("div"));
+	uploadProgress.addClass("upload-progress");
+	uploadProgress.width(progress + "%");
+
+	let uploadCancel = $(document.createElement("button"));
+	uploadCancel.addClass("upload-cancel default flex center");
+
+	uploadCancel.on("click", () => {
+		uploadWrapper.data("destroy", true);
+	});
+
+	let uploadCancelIcon = $(document.createElement("img"));
+	uploadCancelIcon.attr("src", "assets/svg/cross-alt.svg");
+
+	uploadCancel.append(uploadCancelIcon);
+	uploadProgressWrapper.append(uploadProgress);
+	uploadInfoWrapper.append(uploadName, uploadProgressWrapper);
+	uploadWrapper.append(uploadIcon, uploadInfoWrapper, uploadCancel);
+	$("#uploadsWrapper").append(uploadWrapper);
+	$("#uploadsWrapper").trigger("change");
+
+	return uploadWrapper;
+}
+
 class Client {
 	constructor() {
 		this.socket = io();
@@ -45,7 +87,7 @@ class Client {
 
 	sendFile(file) {
 		let chunkSize = 10024;
-		let activityId = utils.uid();
+		let uploadId = utils.uid();
 
 		console.log("SENDING THIS FILE");
 		console.log(file);
@@ -72,47 +114,34 @@ class Client {
 
 				console.log(metadata);
 
-				this.socket.emit("uploadStart", activityId, this.roomCode, msgData, metadata);
+				let uploadUI = UI_addUpload(uploadId, metadata.name, 0);
 
-				this.socket.on("uploadNext" + activityId, (currentSize) => {
+				this.socket.emit("uploadStart", uploadId, this.roomCode, msgData, metadata);
+
+				this.socket.on("uploadNext" + uploadId, (currentSize) => {
 					let chunk = buffer.slice(currentSize, currentSize + chunkSize);
-					this.socket.emit("uploadProgress" + activityId, chunk);
-					//console.log(currentSize);
+					this.socket.emit("uploadProgress" + uploadId, chunk);
+
+					let progress = ((currentSize / metadata.size) * 100) + "%";
+
+					let uploads = $("#uploadsWrapper .upload");
+					for (var i = 0; i < uploads.length; i++) {
+						let upl = $(uploads[i]);
+						if (upl.data("fileId") == uploadId) {
+							upl.find(".upload-progress").width(progress);
+						}
+
+						if (upl.data("destroy")) {
+							this.socket.emit("uploadDestroy" + uploadId);
+						}
+					}
 				});
 
-				this.socket.on("uploadEnd" + activityId, () => {
-
+				this.socket.on("uploadFinish" + uploadId, () => {
+					uploadUI.remove();
+					$("#uploadsWrapper").trigger("change");
 				});
 			}
-
-
-
-			/*let reader = new FileReader();
-			reader.readAsArrayBuffer(file);
-
-			reader.onload = () => {
-				let buffer = new Uint8Array(reader.result);
-				let metadata = {
-					name: file.name,
-					type: file.type,
-					size: file.size,
-					lastModified: file.lastModified
-				};
-
-				let attachment = {
-					buffer,
-					metadata
-				};
-
-				let msgData = {
-					userId: this.socket.id,
-					username: this.username,
-					timestamp: Date.now(),
-					attachment
-				};
-
-				this.socket.emit("sendFile", this.roomCode, msgData);
-			}*/
 		}
 	}
 }
