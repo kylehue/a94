@@ -499,6 +499,27 @@ client.socket.on("serverMessage", msgData => {
 	UI_addMessage(msgData);
 });
 
+client.socket.on("roomNameChange", (roomCode, roomName) => {
+	console.log("roomNameChange");
+	console.log(roomCode, roomName);
+
+	let roomsEl = $("#rooms");
+	let rooms = roomsEl.find(".select-item");
+
+	for(var i = 0; i < rooms.length; i++){
+		let room = $(rooms[i]);
+		if (room.data("code") === roomCode) {
+			room.find("span").text(roomName);
+			if (roomsEl.data("code") === roomCode) {
+				roomsEl.find("label.select-value").text(roomName);
+			}
+			break;
+		}
+	}
+
+	console.log($("#rooms").data());
+});
+
 $("#rooms").on("change", event => {
 	let code = $("#rooms").data("code");
 	client.join(code);

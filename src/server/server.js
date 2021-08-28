@@ -1,5 +1,6 @@
 //Load modules
 const Room = require("./room.js");
+const config = require("./../lib/config.js");
 
 //Setup server
 const express = require("express");
@@ -61,6 +62,25 @@ function findRoomsByUserId(userId) {
 	}
 
 	return _rooms;
+}
+
+function findUserIdsByRoomCode(code) {
+	let userIds = [];
+
+	for(var i = 0; i < rooms.length; i++){
+		let room = rooms[i];
+		if (room.code === code) {
+			for(var j = 0; j < room.users.length; j++){
+				let user = room.users[j];
+
+				if (!userIds.includes(user.id)) {
+					userIds.push(user.id);
+				}
+			}
+		}
+	}
+
+	return userIds;
 }
 
 io.on("connection", socket => {
@@ -211,17 +231,19 @@ io.on("connection", socket => {
 						type: "server"
 					};
 
-					let sendMsg = false;
+					let sendServerMsg = false;
 
-					if (msgTrim == "/lock") {
+					//Lock room
+					if (msgTrim == config.commands.lockRoom) {
 						room.options.locked = true;
-						sendMsg = true;
+						sendServerMsg = true;
 						serverMsg.message = "Room is now locked.";
 					}
 
-					if (msgTrim == "/unlock") {
+					//Unlock room
+					if (msgTrim == config.commands.unlockRoom) {
 						room.options.locked = false;
-						sendMsg = true;
+						sendServerMsg = true;
 						serverMsg.message = "Room is now unlocked.";
 
 						for (var i = 0; i < room.users.length; i++) {
@@ -234,7 +256,29 @@ io.on("connection", socket => {
 						}
 					}
 
-					if (sendMsg) {
+					//Change room name
+					if (msgTrim.startsWith(config.commands.changeRoomName)) {
+						let newName = msgTrim.split(" ")[1];
+						if (newName) {
+							if (newName.length) {
+								newName.trim();
+								room.options.name = newName;
+
+								//Notify
+								sendServerMsg = true;
+								serverMsg.message = "Room name is set to '" + newName + "'";
+
+								//Change clients' room UI text
+								let userIds = findUserIdsByRoomCode(room.code);
+								for(var i = 0; i < userIds.length; i++){
+									io.to(userIds[i]).emit("roomNameChange", room.code, room.options.name);
+								}
+							}
+						}
+					}
+
+					//Send server message
+					if (sendServerMsg) {
 						io.in(room.code).emit("serverMessage", serverMsg);
 						room.addMessage(serverMsg);
 					}
