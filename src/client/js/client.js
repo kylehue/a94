@@ -54,9 +54,17 @@ class Client {
 			this.roomCode = code;
 		});
 
-		this.socket.on("clientRoomUpdate", room => {
+		this.socket.on("updateRoom", room => {
 			this.room = room;
 		});
+	}
+
+	confirmUser(userId) {
+		this.socket.emit("confirmUser", this.roomCode, userId);
+	}
+
+	declineUser(userId) {
+		this.socket.emit("declineUser", this.roomCode, userId);
 	}
 
 	setUsername(username) {

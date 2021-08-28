@@ -98,36 +98,73 @@ io.on("connection", socket => {
 
 		//Add user to room
 		let _user = room.users.find(u => u.id === socket.id);
-		if (!_user) {
-			let user = {
-				id: socket.id,
-				name: userData.name,
-				admin: false
-			};
 
-			if (!room.users.length) {
-				user.admin = true;
-			}
+		let user = {
+			id: socket.id,
+			name: userData.name,
+			admin: false,
+			pending: false
+		};
 
-			if (room.options.locked) {
+		if (_user) {
+			user = _user;
+		}
+
+		if (!room.users.length) {
+			user.admin = true;
+			room.confirmedUsers.push(socket.id);
+		}
+
+		if (room.options.locked) {
+			if (!room.confirmedUsers.includes(user.id)) {
 				user.pending = true;
 			}
+		} else {
+			user.pending = false;
+		}
 
+		if (!_user) {
 			room.addUser(user);
 		}
 
-		io.in(room.code).emit("updateUsers", room.users);
+		console.log("-------------USER:");
+		console.log(user);
+		console.log("......................................");
 
-		if (!room.options.locked) {
+		socket.to(room.code).emit("updateUsers", room.users);
+		socket.emit("updateRoom", room);
+
+		if (!user.pending) {
 			socket.join(room.code);
+			socket.emit("updateUsers", room.users);
 			socket.emit("updateMessages", room.messages);
-			socket.emit("updateRoom", room);
-			socket.emit("clientRoomUpdate", room);
 		} else {
 			socket.emit("updateRoomPending", room);
 		}
 
 		console.log(room);
+	});
+
+	socket.on("confirmUser", (roomCode, userId) => {
+		let room = rooms.find(rm => rm.code === roomCode);
+
+		if (room) {
+			let user = room.getUser(socket.id);
+
+			if (user) {
+				if (user.admin) {
+					let pendingUser = room.getUser(userId);
+					if (pendingUser) {
+						pendingUser.pending = false;
+
+						room.confirmedUsers.push(pendingUser.id);
+						io.in(room.code).to(pendingUser.id).emit("updateUsers", room.users);
+						io.in(room.code).to(pendingUser.id).emit("updateMessages", room.messages);
+						io.in(room.code).to(pendingUser.id).emit("updateRoom", room);
+					}
+				}
+			}
+		}
 	});
 
 	socket.on("changeUsername", username => {
@@ -186,6 +223,15 @@ io.on("connection", socket => {
 						room.options.locked = false;
 						sendMsg = true;
 						serverMsg.message = "Room is now unlocked.";
+
+						for (var i = 0; i < room.users.length; i++) {
+							let user = room.users[i];
+							user.pending = false;
+
+							room.confirmedUsers.push(user.id);
+							io.in(room.code).to(user.id).emit("updateMessages", room.messages);
+							io.in(room.code).to(user.id).emit("updateRoom", room);
+						}
 					}
 
 					if (sendMsg) {

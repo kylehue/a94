@@ -22,6 +22,13 @@ $("#username").on("focusout", event => {
 	client.setUsername(event.target.value);
 });
 
+$("#username").on("keydown", event => {
+	if (event.keyCode == 13) {
+		client.setUsername(event.target.value);
+		$(event.target).blur();
+	}
+});
+
 $("#composeMessage").on("keydown", event => {
 	const input = $(event.target);
 	if (event.keyCode == 13 && !event.shiftKey) {
@@ -35,6 +42,16 @@ $("#composeMessage").on("keydown", event => {
 	}
 });
 
+//Generate random username
+function setRandomUsername() {
+	let un = "user_" + utils.uid(4);
+	$("#username").val(un);
+	client.setUsername(un);
+}
+
+setRandomUsername();
+
+//
 addEventListener("unload", function() {
 	if (writableStream) writableStream.abort();
 });
@@ -292,7 +309,7 @@ function enterRoom(roomData) {
 	let users = roomData.users;
 	for (var i = 0; i < users.length; i++) {
 		let user = users[i];
-		addUser(user);
+		UI_addUser(user);
 	}
 
 	updateUserCount(users.length);
@@ -302,7 +319,7 @@ function updateUserCount(count) {
 	$("#users #userCount").text(count);
 }
 
-function addUser(userData) {
+function UI_addUser(userData) {
 	let userWrapper = $(document.createElement("div"));
 	userWrapper.addClass("user flex row v-center");
 	userWrapper.data("id", userData.id);
@@ -316,6 +333,38 @@ function addUser(userData) {
 	username.text(userData.name);
 
 	userWrapper.append(userIcon, username);
+
+	if (userData.pending) {
+		let confirmButton = $(document.createElement("button"));
+		confirmButton.addClass("validate confirm flex row center");
+
+		let confirmButtonIcon = $(document.createElement("img"));
+		confirmButtonIcon.attr("src", "assets/svg/check-green.svg");
+
+		confirmButton.append(confirmButtonIcon);
+
+		let declineButton = $(document.createElement("button"));
+		declineButton.addClass("validate decline flex row center");
+
+		let declineButtonIcon = $(document.createElement("img"));
+		declineButtonIcon.attr("src", "assets/svg/cross-red.svg");
+
+		declineButton.append(declineButtonIcon);
+
+		userWrapper.append(confirmButton, declineButton);
+
+		confirmButton.on("click", () => {
+			client.confirmUser(userData.id);
+			confirmButton.remove();
+			declineButton.remove();
+		});
+
+		declineButton.on("click", () => {
+			client.declineUser(userData.id);
+			userWrapper.remove();
+		});
+	}
+
 	$("#users .wrapper").append(userWrapper);
 }
 
@@ -336,6 +385,7 @@ client.socket.on("removeUser", userId => {
 	}
 });
 
+//Update username
 client.socket.on("updateUser", _user => {
 	//Update username in users pane
 	let users = $("#users .user");
@@ -356,12 +406,15 @@ client.socket.on("updateUser", _user => {
 	}
 })
 
+//Add user
 client.socket.on("updateUsers", users => {
+	console.log("updateUsers", users);
 	$("#users .user").remove();
 	users.sort((a, b) => a.name - b.name);
 	for (var i = 0; i < users.length; i++) {
 		let user = users[i];
-		addUser(user);
+
+		UI_addUser(user, user.pending);
 	}
 
 	updateUserCount(users.length);
@@ -392,6 +445,7 @@ function addMessageFiles(msgData) {
 }
 
 client.socket.on("updateMessages", messages => {
+	console.log("updateMessages");
 	$("#messages .message").remove();
 	messages.sort((a, b) => a.timestamp - b.timestamp);
 	for (var i = 0; i < messages.length; i++) {
@@ -411,8 +465,19 @@ client.socket.on("newFile", addMessageFiles);
 
 client.socket.on("updateRoom", roomData => {
 	console.log("updateRoom");
-	console.log(roomData)
+	console.log(roomData);
+	$("#lockOverlay").addClass("hidden");
 	UI_addRoom(roomData.options.name, roomData.code);
+
+	//Remove validation buttons
+	let users = $("#users .user");
+	for(var i = 0; i < users.length; i++){
+		let user = $(users[i]);
+		if (user.data("id") === client.socket.id) {
+			user.find("button.validate").remove();
+			break;
+		}
+	}
 	//enterRoom(roomData);
 });
 
@@ -500,6 +565,11 @@ window.addEventListener("keydown", event => {
 	if (escapeKeyCodes.includes(event.keyCode)) {
 		$("#imagePreviewApp").addClass("hidden");
 		$("#overlay").addClass("hidden");
+	} else {
+		console
+		if (document.activeElement.tagName.toLowerCase() != "input") {
+			$("#composeMessage").focus();
+		}
 	}
 });
 

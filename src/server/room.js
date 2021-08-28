@@ -22,6 +22,7 @@ class Room {
 		this.code = code;
 		this.messages = [];
 		this.users = [];
+		this.confirmedUsers = [];
 
 		this.options = {
 			name: code,
