@@ -57,6 +57,14 @@ class Client {
 		this.socket.on("updateRoom", room => {
 			this.room = room;
 		});
+
+		this.socket.on("roomCodeChange", (oldCode, newCode) => {
+			if (oldCode === this.roomCode) {
+				this.roomCode = newCode;
+				this.room.code = newCode;
+				this.socket.emit("joinNewCode", newCode, oldCode);
+			}
+		});
 	}
 
 	confirmUser(userId) {

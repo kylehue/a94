@@ -2,6 +2,7 @@ module.exports = {
 	commands: {
 		lockRoom: "/lock",
 		unlockRoom: "/unlock",
-		changeRoomName: "/name"
+		changeRoomName: "/name",
+		changeRoomCode: "/code"
 	}
 }

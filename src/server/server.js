@@ -67,10 +67,10 @@ function findRoomsByUserId(userId) {
 function findUserIdsByRoomCode(code) {
 	let userIds = [];
 
-	for(var i = 0; i < rooms.length; i++){
+	for (var i = 0; i < rooms.length; i++) {
 		let room = rooms[i];
 		if (room.code === code) {
-			for(var j = 0; j < room.users.length; j++){
+			for (var j = 0; j < room.users.length; j++) {
 				let user = room.users[j];
 
 				if (!userIds.includes(user.id)) {
@@ -258,7 +258,7 @@ io.on("connection", socket => {
 
 					//Change room name
 					if (msgTrim.startsWith(config.commands.changeRoomName)) {
-						let newName = msgTrim.split(" ")[1];
+						let newName = msgTrim.replace(config.commands.changeRoomName + " ", "");
 						if (newName) {
 							if (newName.length) {
 								newName.trim();
@@ -270,10 +270,55 @@ io.on("connection", socket => {
 
 								//Change clients' room UI text
 								let userIds = findUserIdsByRoomCode(room.code);
-								for(var i = 0; i < userIds.length; i++){
+								for (var i = 0; i < userIds.length; i++) {
 									io.to(userIds[i]).emit("roomNameChange", room.code, room.options.name);
 								}
 							}
+						}
+					}
+
+					//Change/Get room code
+					if (msgTrim.startsWith(config.commands.changeRoomCode)) {
+						let newCode = msgTrim.replace(config.commands.changeRoomCode + " ", "");
+						if (newCode) {
+							if (newCode.length) {
+								if (room.code != newCode) {
+									//Check if the new code is unique
+									let roomCheck = rooms.find(rm => rm.code === newCode);
+									let notUnique = false;
+									if (roomCheck) {
+										//If not, create another code
+										newCode = getCode();
+										notUnique = true;
+									} else {
+										codes.push(newCode);
+									}
+
+									//Change room code for UI datas
+									let userIds = findUserIdsByRoomCode(room.code);
+									for (var i = 0; i < userIds.length; i++) {
+										io.to(userIds[i]).emit("roomCodeChange", room.code, newCode);
+									}
+
+									//Notify
+									serverMsg.message = "Room code is set to " + newCode;
+
+									if (notUnique) {
+										serverMsg.message = "The code you indicated isn't unique. Room code is set to " + newCode;
+									}
+
+									io.in(room.code).emit("serverMessage", serverMsg);
+									room.addMessage(serverMsg);
+
+									room.code = newCode;
+								} else {
+									sendServerMsg = true;
+									serverMsg.message = "Room code is already set to " + newCode;
+								}
+							}
+						} else {
+							sendServerMsg = true;
+							serverMsg.message = "Room code is " + room.code;
 						}
 					}
 
@@ -284,6 +329,17 @@ io.on("connection", socket => {
 					}
 				}
 			}
+		}
+	});
+
+	socket.on("joinNewCode", (newCode, oldCode) => {
+		let room = rooms.find(rm => rm.code === newCode);
+
+		if (room) {
+			socket.leave(oldCode);
+			socket.join(newCode);
+			//socket.emit("updateUsers", room.users);
+			//socket.emit("updateMessages", room.messages);
 		}
 	});
 

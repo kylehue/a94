@@ -268,9 +268,14 @@ function UI_addRoom(name, code) {
 		let rm = $(existingRooms[i]);
 
 		if (rm.data("code") === code) {
+			console.log("ROOM EXISTS!");
+			console.log(code);
 			return;
 		}
 	}
+
+	console.log("ROOM DOESN'T EXIST!");
+	console.log(code);
 
 	//Add in UI
 	let room = $(document.createElement("button"));
@@ -471,7 +476,7 @@ client.socket.on("updateRoom", roomData => {
 
 	//Remove validation buttons
 	let users = $("#users .user");
-	for(var i = 0; i < users.length; i++){
+	for (var i = 0; i < users.length; i++) {
 		let user = $(users[i]);
 		if (user.data("id") === client.socket.id) {
 			user.find("button.validate").remove();
@@ -506,18 +511,46 @@ client.socket.on("roomNameChange", (roomCode, roomName) => {
 	let roomsEl = $("#rooms");
 	let rooms = roomsEl.find(".select-item");
 
-	for(var i = 0; i < rooms.length; i++){
+	if (roomsEl.data("code") === roomCode) {
+		roomsEl.find("label.select-value").text(roomName);
+	}
+
+	for (var i = 0; i < rooms.length; i++) {
 		let room = $(rooms[i]);
 		if (room.data("code") === roomCode) {
 			room.find("span").text(roomName);
-			if (roomsEl.data("code") === roomCode) {
-				roomsEl.find("label.select-value").text(roomName);
-			}
+
 			break;
 		}
 	}
+});
 
-	console.log($("#rooms").data());
+client.socket.on("roomCodeChange", (oldRoomCode, newRoomCode) => {
+	console.log("roomCodeChange");
+
+	let roomsEl = $("#rooms");
+	let rooms = roomsEl.find(".select-item");
+
+	if (roomsEl.data("code") === oldRoomCode) {
+		roomsEl.data("code", newRoomCode);
+	}
+
+	for (var i = 0; i < rooms.length; i++) {
+		let room = $(rooms[i]);
+		if (room.data("code") === oldRoomCode) {
+
+			console.log("ROOM BEFORE")
+			console.log(room);
+			//room.find("span").text(roomName);
+			room.attr("id", newRoomCode);
+			room.data("code", newRoomCode);
+
+			console.log("ROOM AFTER")
+			console.log(room);
+
+			break;
+		}
+	}
 });
 
 $("#rooms").on("change", event => {
