@@ -122,6 +122,7 @@ io.on("connection", socket => {
 		let user = {
 			id: socket.id,
 			name: userData.name,
+			host: false,
 			admin: false,
 			pending: false
 		};
@@ -131,6 +132,7 @@ io.on("connection", socket => {
 		}
 
 		if (!room.users.length) {
+			user.host = true;
 			user.admin = true;
 			room.confirmedUsers.push(socket.id);
 		}
@@ -230,7 +232,7 @@ io.on("connection", socket => {
 
 			//Check if the message is a command
 			if (user) {
-				if (user.admin) {
+				if (user.host || user.admin) {
 					let msgTrim = msgData.message.trim().toLowerCase();
 					let serverMsg = {
 						username: "Server",
@@ -241,15 +243,37 @@ io.on("connection", socket => {
 
 					let sendServerMsg = false;
 
+					//Help
+					if (msgTrim == "/help") {
+						sendServerMsg = true;
+
+						let helpMsg = "";
+						let commands = Object.values(config.commands);
+
+						for(var i = 0; i < commands.length; i++){
+							let command = commands[i];
+
+							helpMsg += !command.alt ? command.cmd : command.alt;
+							helpMsg += " - " + command.description;
+
+							//Add line break
+							if (i != commands.length - 1) {
+								helpMsg += "\n\n";
+							}
+						}
+
+						serverMsg.message = helpMsg;
+					}
+
 					//Lock room
-					if (msgTrim == config.commands.lockRoom) {
+					if (msgTrim == config.commands.lockRoom.cmd) {
 						room.options.locked = true;
 						sendServerMsg = true;
 						serverMsg.message = "Room is now locked.";
 					}
 
 					//Unlock room
-					if (msgTrim == config.commands.unlockRoom) {
+					if (msgTrim == config.commands.unlockRoom.cmd) {
 						room.options.locked = false;
 						sendServerMsg = true;
 						serverMsg.message = "Room is now unlocked.";
@@ -267,7 +291,7 @@ io.on("connection", socket => {
 					}
 
 					//Change room name
-					if (msgTrim.startsWith(config.commands.changeRoomName)) {
+					if (msgTrim.startsWith(config.commands.changeRoomName.cmd)) {
 						let newName = msgTrim.split(" ");
 						newName.shift();
 						newName = newName.join(" ");
@@ -290,7 +314,7 @@ io.on("connection", socket => {
 					}
 
 					//Change/Get room code
-					if (msgTrim.startsWith(config.commands.changeRoomCode)) {
+					if (msgTrim.startsWith(config.commands.changeRoomCode.cmd)) {
 						let newCode = msgTrim.split(" ");
 						newCode.shift();
 						newCode = newCode.join(" ");
@@ -335,6 +359,29 @@ io.on("connection", socket => {
 							serverMsg.message = "Room code is " + room.code;
 						}
 					}
+
+					/*//Kick users
+					if (msgTrim.startsWith(config.commands.kickUser.cmd)) {
+						let newName = msgTrim.split(" ");
+						newName.shift();
+						newName = newName.join(" ");
+						if (newName) {
+							if (newName.length) {
+								newName.trim();
+								room.options.name = newName;
+
+								//Notify
+								sendServerMsg = true;
+								serverMsg.message = "Room name is set to '" + newName + "'";
+
+								//Change clients' room UI text
+								let userIds = findUserIdsByRoomCode(room.code);
+								for (var i = 0; i < userIds.length; i++) {
+									io.to(userIds[i]).emit("roomNameChange", room.code, room.options.name);
+								}
+							}
+						}
+					}*/
 
 					//Send server message
 					if (sendServerMsg) {
