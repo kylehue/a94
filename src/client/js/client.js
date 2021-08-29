@@ -65,6 +65,18 @@ class Client {
 				this.socket.emit("joinNewCode", newCode, oldCode);
 			}
 		});
+
+		this.socket.on("confirmedUser", roomCode => {
+			if (this.roomCode === roomCode) {
+				this.socket.emit("joinNewCode", roomCode, "");
+				this.socket.emit("reloadRoom", roomCode);
+			}
+		});
+
+		this.socket.on("bruh", time => {
+			console.log("FSEFASEFSEFES")
+			console.log(time)
+		});
 	}
 
 	confirmUser(userId) {

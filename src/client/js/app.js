@@ -76,9 +76,9 @@ function UI_addMessage(msgData) {
 	let timestamp = $(document.createElement("p"));
 	timestamp.addClass("timestamp");
 
-	msgData.timestamp = new Date(msgData.timestamp).toLocaleTimeString();
-	msgData.timestamp = msgData.timestamp.replace(/:[0-9]\d\s/, " ");
-	timestamp.text(msgData.timestamp);
+	let msgTimestamp = new Date(msgData.timestamp).toLocaleTimeString();
+	msgTimestamp = msgTimestamp.replace(/:[0-9]\d\s/, " ");
+	timestamp.text(msgTimestamp);
 	headWrapper.append(username, timestamp);
 
 	let message = $(document.createElement("p"));
@@ -105,9 +105,9 @@ function UI_addFile(msgData, file) {
 	let timestamp = $(document.createElement("p"));
 	timestamp.addClass("timestamp");
 
-	msgData.timestamp = new Date(msgData.timestamp).toLocaleTimeString();
-	msgData.timestamp = msgData.timestamp.replace(/:[0-9]\d\s/, " ");
-	timestamp.text(msgData.timestamp);
+	let msgTimestamp = new Date(msgData.timestamp).toLocaleTimeString();
+	msgTimestamp = msgTimestamp.replace(/:[0-9]\d\s/, " ");
+	timestamp.text(msgTimestamp);
 	headWrapper.append(username, timestamp);
 
 	let fileWrapper = $(document.createElement("div"));
@@ -170,9 +170,9 @@ function UI_addImage(msgData, imgURL) {
 	let timestamp = $(document.createElement("p"));
 	timestamp.addClass("timestamp");
 
-	msgData.timestamp = new Date(msgData.timestamp).toLocaleTimeString();
-	msgData.timestamp = msgData.timestamp.replace(/:[0-9]\d\s/, " ");
-	timestamp.text(msgData.timestamp);
+	let msgTimestamp = new Date(msgData.timestamp).toLocaleTimeString();
+	msgTimestamp = msgTimestamp.replace(/:[0-9]\d\s/, " ");
+	timestamp.text(msgTimestamp);
 	headWrapper.append(username, timestamp);
 
 	let image = $(document.createElement("img"));
@@ -206,9 +206,9 @@ function UI_addVideo(msgData, vidURL) {
 	let timestamp = $(document.createElement("p"));
 	timestamp.addClass("timestamp");
 
-	msgData.timestamp = new Date(msgData.timestamp).toLocaleTimeString();
-	msgData.timestamp = msgData.timestamp.replace(/:[0-9]\d\s/, " ");
-	timestamp.text(msgData.timestamp);
+	let msgTimestamp = new Date(msgData.timestamp).toLocaleTimeString();
+	msgTimestamp = msgTimestamp.replace(/:[0-9]\d\s/, " ");
+	timestamp.text(msgTimestamp);
 	headWrapper.append(username, timestamp);
 
 	let video = $(document.createElement("video"));
@@ -241,9 +241,9 @@ function UI_addAudio(msgData, audURL) {
 	let timestamp = $(document.createElement("p"));
 	timestamp.addClass("timestamp");
 
-	msgData.timestamp = new Date(msgData.timestamp).toLocaleTimeString();
-	msgData.timestamp = msgData.timestamp.replace(/:[0-9]\d\s/, " ");
-	timestamp.text(msgData.timestamp);
+	let msgTimestamp = new Date(msgData.timestamp).toLocaleTimeString();
+	msgTimestamp = msgTimestamp.replace(/:[0-9]\d\s/, " ");
+	timestamp.text(msgTimestamp);
 	headWrapper.append(username, timestamp);
 
 	let audio = $(document.createElement("audio"));
@@ -409,11 +409,12 @@ client.socket.on("updateUser", _user => {
 			msg.find(".username").text(_user.name);
 		}
 	}
-})
+});
 
 //Add user
 client.socket.on("updateUsers", users => {
 	console.log("updateUsers", users);
+
 	$("#users .user").remove();
 	users.sort((a, b) => a.name - b.name);
 	for (var i = 0; i < users.length; i++) {

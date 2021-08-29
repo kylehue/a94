@@ -37,6 +37,17 @@ class Room {
 		if (user) {
 			this.users.splice(this.users.indexOf(user), 1);
 		}
+
+		let confirmedUser = this.confirmedUsers.find(u => u === userId);
+		if (confirmedUser) {
+			this.confirmedUsers.splice(this.confirmedUsers.indexOf(confirmedUser), 1);
+		}
+	}
+
+	confirmUserId(userId) {
+		if (!this.confirmedUsers.includes(userId)) {
+			this.confirmedUsers.push(userId);
+		}
 	}
 
 	addUser(user) {

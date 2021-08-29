@@ -176,14 +176,22 @@ io.on("connection", socket => {
 					let pendingUser = room.getUser(userId);
 					if (pendingUser) {
 						pendingUser.pending = false;
+						room.confirmUserId(pendingUser.id);
 
-						room.confirmedUsers.push(pendingUser.id);
-						io.in(room.code).to(pendingUser.id).emit("updateUsers", room.users);
-						io.in(room.code).to(pendingUser.id).emit("updateMessages", room.messages);
-						io.in(room.code).to(pendingUser.id).emit("updateRoom", room);
+						io.to(pendingUser.id).emit("confirmedUser", room.code);
 					}
 				}
 			}
+		}
+	});
+
+	socket.on("reloadRoom", roomCode => {
+		let room = rooms.find(rm => rm.code === roomCode);
+
+		if (room) {
+			io.in(room.code).emit("updateRoom", room);
+			io.in(room.code).emit("updateUsers", room.users);
+			io.in(room.code).emit("updateMessages", room.messages);
 		}
 	});
 
@@ -248,17 +256,21 @@ io.on("connection", socket => {
 
 						for (var i = 0; i < room.users.length; i++) {
 							let user = room.users[i];
-							user.pending = false;
 
-							room.confirmedUsers.push(user.id);
-							io.in(room.code).to(user.id).emit("updateMessages", room.messages);
-							io.in(room.code).to(user.id).emit("updateRoom", room);
+							if (user.pending) {
+								user.pending = false;
+
+								room.confirmUserId(user.id);
+								io.to(user.id).emit("confirmedUser", room.code);
+							}
 						}
 					}
 
 					//Change room name
 					if (msgTrim.startsWith(config.commands.changeRoomName)) {
-						let newName = msgTrim.replace(config.commands.changeRoomName + " ", "");
+						let newName = msgTrim.split(" ");
+						newName.shift();
+						newName = newName.join(" ");
 						if (newName) {
 							if (newName.length) {
 								newName.trim();
@@ -279,7 +291,9 @@ io.on("connection", socket => {
 
 					//Change/Get room code
 					if (msgTrim.startsWith(config.commands.changeRoomCode)) {
-						let newCode = msgTrim.replace(config.commands.changeRoomCode + " ", "");
+						let newCode = msgTrim.split(" ");
+						newCode.shift();
+						newCode = newCode.join(" ");
 						if (newCode) {
 							if (newCode.length) {
 								if (room.code != newCode) {
@@ -381,33 +395,6 @@ io.on("connection", socket => {
 			});
 		}
 	});
-
-	/*const ss = require("socket.io-stream");
-	const fs = require("fs");
-
-	socket.on("sendFile", (roomCode, msgData) => {
-		var stream = ss.createStream();
-		stream.on("end", function(e) {
-			console.log("file sent");
-			console.log(e);
-		});
-
-		ss(socket).emit("sending", stream);
-		fs.createReadStream(msgData.attachment.metadata.name).pipe(stream);
-	});*/
-
-	/*socket.on("sendFile", (roomCode, msgData) => {
-		let room = rooms.find(rm => rm.code === roomCode);
-
-		console.log(roomCode, msgData);
-
-		if (room) {
-			room.addMessage(msgData);
-			io.in(room.code).emit("newFile", msgData);
-		}
-	});*/
-
-
 
 
 
