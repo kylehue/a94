@@ -91,7 +91,7 @@ io.on("connection", socket => {
 		for (var i = 0; i < userRooms.length; i++) {
 			let room = userRooms[i];
 			room.removeUser(socket.id);
-			io.in(room.code).emit("removeUser", socket.id);
+			io.in(room.code).emit("updateUsers", room.users);
 		}
 	});
 
@@ -204,7 +204,7 @@ io.on("connection", socket => {
 			let user = room.users.find(u => u.id === socket.id);
 			if (user) {
 				user.name = username;
-				io.in(room.code).emit("updateUser", user);
+				io.in(room.code).emit("roomUsernameChange", user);
 			}
 
 			//Update messages username

@@ -324,7 +324,19 @@ function updateUserCount(count) {
 	$("#users #userCount").text(count);
 }
 
-function UI_addUser(userData) {
+function sortUsers() {
+	//Sort users in dom
+	//https://stackoverflow.com/a/25218104/16446474
+	let clientUsers = $("#users .user").get();
+
+	clientUsers.sort(function(el1, el2) {
+		return $(el1).text().trim().localeCompare($(el2).text().trim())
+	});
+
+	$("#users .wrapper").append(clientUsers);
+}
+
+function UI_addUser(userData, ignoreAppend) {
 	let userWrapper = $(document.createElement("div"));
 	userWrapper.addClass("user flex row v-center");
 	userWrapper.data("id", userData.id);
@@ -370,7 +382,11 @@ function UI_addUser(userData) {
 		});
 	}
 
-	$("#users .wrapper").append(userWrapper);
+	if (!ignoreAppend) {
+		$("#users .wrapper").append(userWrapper);
+	}
+
+	return userWrapper;
 }
 
 events.on("userJoin", code => {
@@ -380,18 +396,8 @@ events.on("userJoin", code => {
 	});
 });
 
-client.socket.on("removeUser", userId => {
-	let users = $("#users .user");
-	for (var i = 0; i < users.length; i++) {
-		let user = $(users[i]);
-		if (user.data("id") === userId) {
-			user.remove();
-		}
-	}
-});
-
 //Update username
-client.socket.on("updateUser", _user => {
+client.socket.on("roomUsernameChange", _user => {
 	//Update username in users pane
 	let users = $("#users .user");
 	for (var i = 0; i < users.length; i++) {
@@ -409,21 +415,53 @@ client.socket.on("updateUser", _user => {
 			msg.find(".username").text(_user.name);
 		}
 	}
+
+	sortUsers();
 });
 
 //Add user
-client.socket.on("updateUsers", users => {
-	console.log("updateUsers", users);
+client.socket.on("updateUsers", serverUsers => {
+	console.log("updateUsers", serverUsers);
+	serverUsers.sort((a, b) => a.name - b.name);
 
-	$("#users .user").remove();
-	users.sort((a, b) => a.name - b.name);
-	for (var i = 0; i < users.length; i++) {
-		let user = users[i];
+	//Adding new users from server
+	let clientUsers = $("#users .user");
+	for (var i = 0; i < serverUsers.length; i++) {
+		let serverUser = serverUsers[i];
 
-		UI_addUser(user, user.pending);
+		//Check if this user exists in dom...
+		let exists = false;
+		for (var j = 0; j < clientUsers.length; j++) {
+			let clientUser = $(clientUsers[j]);
+			if (clientUser.data("id") === serverUser.id) {
+				exists = true;
+			}
+		}
+
+		if (!exists) {
+			//...if it doesn't exist, add it
+			UI_addUser(serverUser);
+		}
 	}
 
-	updateUserCount(users.length);
+
+	//Removing client users that isn't in the server
+	clientUsers = $("#users .user");
+	for (var i = 0; i < clientUsers.length; i++) {
+		let clientUser = $(clientUsers[i]);
+
+		//Check if client user exists in the server...
+		let findUser = serverUsers.find(u => u.id === clientUser.data("id"));
+
+		if (!findUser) {
+			//...if it doesn't exist in the server users, remove it from dom
+			clientUser.remove();
+		}
+
+	}
+
+	sortUsers();
+	updateUserCount(serverUsers.length);
 });
 
 function addMessageFiles(msgData) {
