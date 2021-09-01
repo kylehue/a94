@@ -18,19 +18,20 @@
 		<div id="imagePreviewApp" class="absolute flex center hidden">
 			<img src="assets/images/2pliq2.jpg">
 		</div>
+		
 		<div id="uploadsList" class="dialog hidden">
 			<div id="uploadsWrapper" class="body flex col">
 				<!-- <div class="upload flex row v-center">
-						<img src="assets/svg/file.svg">
-						<div class="upload-info flex col">
-								<label class="note upload-name">Sample.pngffffffffffffffffffffffffffff</label>
-								<div class="upload-progress-wrapper">
-										<div class="upload-progress"></div>
+								<img src="assets/svg/file.svg">
+								<div class="upload-info flex col">
+												<label class="note upload-name">Sample.pngffffffffffffffffffffffffffff</label>
+												<div class="upload-progress-wrapper">
+																<div class="upload-progress"></div>
+												</div>
 								</div>
-						</div>
-						<button class="upload-cancel default flex center">
-							<img src="assets/svg/cross-alt.svg">
-						</button>
+								<button class="upload-cancel default flex center">
+									<img src="assets/svg/cross-alt.svg">
+								</button>
 				</div> -->
 			</div>
 		</div>
@@ -94,7 +95,7 @@
 				</div>
 				<div class="dialog select-itemWrapper hidden flex col h-center">
 					<input id="roomFilter" class="default select-filter" placeholder="Filter" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
-					<!-- 
+					<!--
 					<button value="654" class="select-item flex row v-center room">
 					<img src="assets/svg/chat-bubble.svg">
 					<span>Room B</span>
@@ -289,7 +290,44 @@
 						<p>guyz plz dont spam lul</p>
 					</div>
 				</div>
+
+				<div id="tags" class="flex hidden">
+					<div class="wrapper flex row">
+
+					</div>
+				</div>
+
 				<div id="textArea" class="textArea flex row v-center">
+
+					<div id="tagList" class="dialog flex col" v-if="!hidden">
+						<div class="wrapper flex col">
+							<!-- <button class="default flex row v-center">
+								<img src="assets/svg/user.svg"></img>
+								<span>Test</label>
+							</button>
+							<button class="default flex row v-center">
+								<img src="assets/svg/user.svg"></img>
+								<span>Test</label>
+							</button>
+							<button class="default flex row v-center">
+								<img src="assets/svg/user.svg"></img>
+								<span>Test</label>
+							</button>
+							<button class="default flex row v-center">
+								<img src="assets/svg/user.svg"></img>
+								<span>Test</label>
+							</button>
+							<button class="default flex row v-center">
+								<img src="assets/svg/user.svg"></img>
+								<span>Test</label>
+							</button>
+							<button class="default flex row v-center">
+								<img src="assets/svg/user.svg"></img>
+								<span>Test</label>
+							</button> -->
+						</div>
+					</div>
+
 					<div id="uploadFile" class="custom-file">
 						<input id="fileInput" type="file" multiple title="">
 						<button class="flex col center">
@@ -297,7 +335,7 @@
 						</button>
 					</div>
 					<label class="placeholder">Type here...</label>
-					<textarea id="composeMessage" class="auto-height default" rows="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+					<div contentEditable="true" id="composeMessage" class="auto-height default" rows="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div>
 				</div>
 			</div>
 			<div id="users" class="flex col h-center">
@@ -325,6 +363,7 @@
 		src="https://code.jquery.com/jquery-3.6.0.min.js"
 		integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
 		crossorigin="anonymous"></script>
+		<script src="js/jquery.caret.js"></script>
 		<script src="js/vue.dev.js"></script>
 		<script src="js/autosize.js"></script>
 		<!-- scripts -->

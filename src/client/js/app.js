@@ -9,9 +9,19 @@ const streamsaver = require("streamsaver");
 //Vue apps
 const roomApp = require("./views/view.room.js");
 const fileUploadApp = require("./views/view.fileUpload.js");
+const tagList = require("./views/view.tagList.js");
 
 //Public variables
 const __development__ = true;
+
+//Generate random username
+function setRandomUsername() {
+	let un = "user_" + utils.uid(4);
+	$("#username").val(un);
+	client.setUsername(un);
+}
+
+setRandomUsername();
 
 //UI events
 $("#createRoom").on("click", () => {
@@ -31,25 +41,128 @@ $("#username").on("keydown", event => {
 
 $("#composeMessage").on("keydown", event => {
 	const input = $(event.target);
+	let msg = input.text();
 	if (event.keyCode == 13 && !event.shiftKey) {
-		let msg = input.val();
-		if (msg.length) client.sendMessage(msg);
-
 		event.preventDefault();
-		input.val("");
-		input.trigger("input");
-		autosize.update(input);
+
+		if (tagList.hidden) {
+			if (msg.length) client.sendMessage(msg);
+
+			input.text("");
+			input.trigger("input");
+			autosize.update(input);
+		} else {
+			$("#tagList button.active").trigger("click");
+		}
+	} else if (event.keyCode == 38) {
+		if (!tagList.hidden) {
+			event.preventDefault();
+			tagList.selectPrev();
+		}
+	} else if (event.keyCode == 40) {
+		if (!tagList.hidden) {
+			event.preventDefault();
+			tagList.selectNext();
+		}
 	}
 });
 
-//Generate random username
-function setRandomUsername() {
-	let un = "user_" + utils.uid(4);
-	$("#username").val(un);
-	client.setUsername(un);
+//Check if tagging
+$("#composeMessage").on("click keyup input", event => {
+	const input = $(event.target);
+	let value = input.text().replace(/\s/g, " ");
+	let caret = input.caret();
+
+	//Search for '@'
+	let atIndex = undefined;
+	for (var i = caret - 1; i >= 0; i--) {
+		if (value[i] == "@") {
+			atIndex = i;
+			break;
+		}
+
+		//Abort search if there's a space
+		if (value[i] == " ") {
+			atIndex = undefined;
+			break;
+		}
+	}
+
+	//If there's an '@' before the caret...
+	if (typeof atIndex == "number") {
+		let hasSpaceBefore = value[atIndex - 1] == " ";
+
+		//Show tag list if there's a space before the '@' OR the '@' is the first character of the message
+		if (hasSpaceBefore || atIndex === 0) {
+			let searchStr = value.substring(atIndex, caret).substr(1);
+
+			tagList.show();
+			tagList.search(searchStr);
+		} else {
+			tagList.hide();
+		}
+
+	} else {
+		tagList.hide();
+	}
+});
+
+//Hide taglist on body click
+addEventListener("mousedown", event => {
+	if (!_isDescendant(event.target, "#tagList") && event.target.id != "tagList") {
+		tagList.hide();
+	}
+});
+
+function addTag(id, name) {
+	let wrapper = $("<div>");
+	wrapper.addClass("tag flex row v-center");
+	wrapper.data("id", id);
+
+	let label = $("<label>");
+	label.text(name);
+
+	let closeIcon = $("<img>");
+	closeIcon.attr("src", "assets/svg/cross-alt.svg");
+
+	wrapper.append(label, closeIcon);
+
+	wrapper.on("click", () => {
+		wrapper.remove();
+		$("#tags").trigger("change");
+	});
+
+	$("#tags .wrapper").append(wrapper);
+	$("#tags").trigger("change");
 }
 
-setRandomUsername();
+events.on("tagUser", (id, name) => {
+	let input = $("#composeMessage");
+	let value = input.text();
+	let caret = input.caret();
+
+	//Delete tag text
+	//Search for '@'
+	let atIndex = undefined;
+	for (var i = caret - 1; i >= 0; i--) {
+		if (value[i] == "@") {
+			atIndex = i;
+			break;
+		}
+	}
+
+	//If there's an '@' before the caret
+	if (typeof atIndex == "number") {
+		let left = value.substring(0, atIndex);
+		let right = value.substring(caret);
+
+		input.text(left + right);
+		input.focus();
+		input.caret(atIndex);
+
+		addTag(id, name);
+	}
+});
 
 //
 addEventListener("unload", function() {
@@ -444,7 +557,6 @@ client.socket.on("updateUsers", serverUsers => {
 		}
 	}
 
-
 	//Removing client users that isn't in the server
 	clientUsers = $("#users .user");
 	for (var i = 0; i < clientUsers.length; i++) {
@@ -612,6 +724,15 @@ $("#uploadsWrapper").on("change", () => {
 	}
 });
 
+$("#tags").on("change", () => {
+	let tags = $("#tags .tag");
+	if (!tags.length) {
+		$("#tags").addClass("hidden");
+	} else {
+		$("#tags").removeClass("hidden");
+	}
+});
+
 $("#overlay, #imagePreviewApp").on("click", () => {
 	if (!$("#imagePreviewApp").hasClass("hidden")) {
 		$("#imagePreviewApp").addClass("hidden");
@@ -653,7 +774,9 @@ $(window).on("dragover", event => {
 
 //Handle escape keys
 window.addEventListener("keydown", event => {
-	console.log(event.keyCode);
+	if (event.shiftKey) {
+		console.log(event.keyCode);
+	}
 	let escapeKeyCodes = [27, 13, 32];
 	if (escapeKeyCodes.includes(event.keyCode)) {
 		$("#imagePreviewApp").addClass("hidden");
@@ -670,6 +793,7 @@ window.addEventListener("keydown", event => {
 /*
  *File messages inaccurate order
  *Progress bar on upload
+ *Fix chat paragraph wrapping
  *Remove unnecessary fonts
  *Select box adjust position when getting blocked
  *Character limit

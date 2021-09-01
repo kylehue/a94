@@ -72,11 +72,11 @@ addEventListener("mousedown", event => {
 });
 
 //Textarea
-$("textarea").on("input", event => {
+$("#composeMessage").on("input", event => {
 	const textArea = $(event.target);
 	const parent = textArea.closest(".textArea");
 	const placeholder = parent.find("label.placeholder");
-	let value = textArea.val();
+	let value = textArea.text();
 	if (value.length) {
 		placeholder.addClass("hidden");
 	} else {
@@ -96,3 +96,7 @@ $(".custom-file > button").on("click", event => {
 	input.trigger("click");
 });
 
+$("#tags .tag").on("click", event => {
+	$(event.target).remove();
+	$("#tags").trigger("change");
+});

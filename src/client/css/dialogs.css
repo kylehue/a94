@@ -167,3 +167,33 @@
 	padding: 0;
 	margin-left: 5px;
 }
+
+#tagList {
+	position: absolute;
+	z-index: 9999;
+	width: 200px;
+	max-height: 200px;
+	min-height: 40px;
+	height: fit-content;
+	bottom: calc(100% + 5px);
+
+	padding: 10px 5px;
+}
+
+#tagList .wrapper {
+	width: 100%;
+	height: 100%;
+	overflow: hidden auto;
+	box-sizing: border-box;
+}
+
+#tagList button {
+	background: none;
+	width: 100%;
+	height: 40px;
+	flex-shrink: 0;
+}
+
+#tagList button.active {
+	background: var(--accent);
+}
