@@ -3,6 +3,7 @@ const events = require("../../lib/events.js");
 const mouse = require("../../lib/mouse.js");
 const key = require("../../lib/key.js");
 const utils = require("../../lib/utils.js");
+const config = require("../../lib/config.js");
 const client = require("./client.js");
 const streamsaver = require("streamsaver");
 
@@ -174,8 +175,22 @@ addEventListener("unload", function() {
 	if (writableStream) writableStream.abort();
 });
 
+function findUserById(id) {
+	let users = $("#users .user");
+	for (var i = 0; i < users.length; i++) {
+		let user = $(users[i]);
+		if (user.data("id") === id) {
+			return user;
+		}
+	}
+}
+
 //
 function UI_addMessage(msgData) {
+	if (msgData.message.startsWith(config.commands.changeRoomCode.cmd)) {
+		return;
+	}
+
 	let wrapper = $(document.createElement("div"));
 	wrapper.addClass("message flex col");
 	wrapper.data("userId", msgData.userId);
@@ -199,55 +214,93 @@ function UI_addMessage(msgData) {
 	timestamp.text(msgTimestamp);
 	headWrapper.append(username, timestamp);
 
-	let message = $(document.createElement("p"));
-	message.text(msgData.message);
+
+	//Check words for user ids
+	let words = msgData.message.split(" ");
+	let userIdRegex = /<@[a-zA-Z0-9-_]*>/g;
+	let message = $("<p>");
+
+	for (var i = 0; i < words.length; i++) {
+		let word = words[i];
+		if (userIdRegex.test(word)) {
+			let id = word.replace("<@", "").replace(">", "");
+			let user = findUserById(id);
+
+			if (user) {
+				let span = $("<span>");
+				span.addClass("userTag");
+				span.data("id", id);
+
+				if (id === client.socket.id) {
+					span.text(user.text() + " (YOU)");
+				} else {
+					span.text(user.text());
+				}
+
+				message.append(span);
+			} else {
+				message.append(word);
+			}
+
+		} else {
+			message.append(word);
+		}
+
+		if (i != words.length - 1) {
+			message.append(" ");
+		}
+	}
+
 	wrapper.append(headWrapper, message);
 
-	if (msgData.mentions.length) {
-		let tagsWrapper = $("<div>");
-		tagsWrapper.addClass("tags flex row");
+	//Check mentions
+	if (msgData.mentions) {
+		if (msgData.mentions.length) {
+			let tagsWrapper = $("<div>");
+			tagsWrapper.addClass("tags flex row");
 
-		let tagsParagraph = $("<p>");
-		tagsParagraph.addClass("note");
-		tagsParagraph.text("To: ");
+			let tagsParagraph = $("<p>");
+			tagsParagraph.addClass("note");
+			tagsParagraph.text("To: ");
 
-		for (var i = 0; i < msgData.mentions.length; i++) {
-			let mentionId = msgData.mentions[i];
-			let username = undefined;
+			for (var i = 0; i < msgData.mentions.length; i++) {
+				let mentionId = msgData.mentions[i];
+				let username = undefined;
 
-			//Find username using the mention id
-			let users = $("#users .user");
-			for (var j = 0; j < users.length; j++) {
-				let user = $(users[j]);
-				let id = user.data("id");
-				if (id === mentionId) {
-					username = user.text();
-					break;
+				//Find username using the mention id
+				let users = $("#users .user");
+				for (var j = 0; j < users.length; j++) {
+					let user = $(users[j]);
+					let id = user.data("id");
+					if (id === mentionId) {
+						username = user.text();
+						break;
+					}
+				}
+
+				if (mentionId === client.socket.id) {
+					username += " (YOU)";
+				}
+
+				let tag = $("<span>");
+				tag.data("id", mentionId);
+				tag.addClass("userTag tag note");
+				tag.text(username);
+				tagsParagraph.append(tag);
+
+				if (i != msgData.mentions.length - 1) {
+					tagsParagraph.append(", ");
 				}
 			}
 
-			if (mentionId === client.socket.id) {
-				username += " (YOU)";
-			}
-
-			let tag = $("<span>");
-			tag.data("id", mentionId);
-			tag.addClass("tag note");
-			tag.text(username);
-			tagsParagraph.append(tag);
-
-			if (i != msgData.mentions.length - 1) {
-				tagsParagraph.append(", ");
-			}
+			tagsWrapper.append(tagsParagraph);
+			wrapper.append(tagsWrapper);
 		}
 
-		tagsWrapper.append(tagsParagraph);
-		wrapper.append(tagsWrapper);
-	}
-
-	//Highlight message if mentioned
-	if (msgData.mentions.includes(client.socket.id)) {
-		wrapper.addClass("mentioned");
+		//Highlight message if mentioned
+		if (msgData.mentions.includes(client.socket.id)) {
+			wrapper.addClass("mentioned");
+		}
 	}
 
 	let messagesWrapper = $("#chatApp #messages");
@@ -582,7 +635,7 @@ client.socket.on("roomUsernameChange", _user => {
 	}
 
 	//Update username in message mentions
-	let tags = $("#messages .tags .tag");
+	let tags = $(".userTag");
 	for (var i = 0; i < tags.length; i++) {
 		let tag = $(tags[i]);
 		if (tag.data("id") === _user.id) {

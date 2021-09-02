@@ -15,6 +15,18 @@ module.exports = {
 		changeRoomCode: {
 			cmd: "/code",
 			description: "Modify the room's secret code."
+		},
+		promoteUser: {
+			cmd: "/promote",
+			description: "Promote mentioned users to Admin."
+		},
+		demoteUser: {
+			cmd: "/demote",
+			description: "Demote an Admin."
+		},
+		kickUser: {
+			cmd: "/kick",
+			description: "Kick mentioned users."
 		}
 	}
 }

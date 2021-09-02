@@ -49,6 +49,7 @@ class Client {
 
 		this.roomCode = undefined;
 		this.username = undefined;
+		this.room = null;
 
 		this.socket.on("autoCode", code => {
 			this.roomCode = code;
@@ -71,6 +72,26 @@ class Client {
 				this.socket.emit("joinNewCode", roomCode, "");
 				this.socket.emit("reloadRoom", roomCode);
 			}
+		});
+
+		this.socket.on("clientKicked", roomCode => {
+			this.socket.emit("leaveRoom", roomCode);
+
+			let rooms = $("#rooms .room");
+			for(var i = 0; i < rooms.length; i++){
+				let room = $(rooms[i]);
+				if (room.data("code") === roomCode) {
+					room.remove();
+					break;
+				}
+			}
+
+			if (!rooms.length) {
+				$("#rooms label.select-value").text("Rooms");
+			}
+
+			this.roomCode = undefined;
+			this.room = null;
 		});
 	}
 
