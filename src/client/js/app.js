@@ -185,12 +185,20 @@ function findUserById(id) {
 	}
 }
 
+function isScrolledToBottom(el) {
+	//https://stackoverflow.com/a/32283147/16446474
+	let $el = $(el);
+	return el.scrollHeight - $el.scrollTop() - $el.outerHeight() < 20;
+}
+
 //
 function UI_addMessage(msgData) {
 	//Don't add message is it begins with '/code' command
 	if (msgData.message.startsWith(config.commands.changeRoomCode.cmd)) {
 		return;
 	}
+
+	let _isScrolledToBottom = isScrolledToBottom($("#messages")[0]);
 
 	let wrapper = $("<div>");
 	wrapper.addClass("message flex col");
@@ -306,10 +314,15 @@ function UI_addMessage(msgData) {
 
 	let messagesWrapper = $("#chatApp #messages");
 	messagesWrapper.append(wrapper);
-	messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
+
+	if (_isScrolledToBottom) {
+		messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
+	}
 }
 
 function UI_addFile(msgData, file) {
+	let _isScrolledToBottom = isScrolledToBottom($("#messages")[0]);
+
 	let wrapper = $("<div>");
 	wrapper.addClass("message flex col");
 	wrapper.data("userId", msgData.userId);
@@ -371,7 +384,10 @@ function UI_addFile(msgData, file) {
 
 	let messagesWrapper = $("#chatApp #messages");
 	messagesWrapper.append(wrapper);
-	messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
+
+	if (_isScrolledToBottom) {
+		messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
+	}
 }
 
 function UI_addImage(msgData, imgURL) {
@@ -844,6 +860,8 @@ $("#uploadsWrapper").on("change", () => {
 });
 
 $("#tags").on("change", () => {
+	let _isScrolledToBottom = isScrolledToBottom($("#messages")[0]);
+
 	let tags = $("#tags .tag");
 	if (!tags.length) {
 		$("#tags").addClass("hidden");
@@ -852,7 +870,9 @@ $("#tags").on("change", () => {
 	}
 
 	let messagesWrapper = $("#messages");
-	messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
+	if (_isScrolledToBottom) {
+		messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
+	}
 });
 
 $("#overlay, #imagePreviewApp").on("click", () => {
