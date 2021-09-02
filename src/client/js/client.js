@@ -95,6 +95,14 @@ class Client {
 		});
 	}
 
+	typing() {
+		this.socket.emit("userTyping", this.roomCode);
+	}
+
+	afk() {
+		this.socket.emit("userAFK", this.roomCode);
+	}
+
 	confirmUser(userId) {
 		this.socket.emit("confirmUser", this.roomCode, userId);
 	}

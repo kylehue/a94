@@ -92,6 +92,7 @@ io.on("connection", socket => {
 			let room = userRooms[i];
 			room.removeUser(socket.id);
 			io.in(room.code).emit("updateUsers", room.users);
+			io.in(room.code).emit("typingUsersUpdate", room.typingUsers);
 		}
 	});
 
@@ -433,6 +434,26 @@ io.on("connection", socket => {
 			socket.join(newCode);
 			//socket.emit("updateUsers", room.users);
 			//socket.emit("updateMessages", room.messages);
+		}
+	});
+
+	socket.on("userTyping", roomCode => {
+		let room = rooms.find(rm => rm.code === roomCode);
+
+		if (room) {
+			room.addTypingUserId(socket.id);
+
+			io.in(room.code).emit("typingUsersUpdate", room.typingUsers);
+		}
+	});
+
+	socket.on("userAFK", roomCode => {
+		let room = rooms.find(rm => rm.code === roomCode);
+
+		if (room) {
+			room.removeTypingUser(socket.id);
+
+			io.in(room.code).emit("typingUsersUpdate", room.typingUsers);
 		}
 	});
 

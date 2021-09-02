@@ -212,6 +212,27 @@
 	border-radius: 3px;
 }
 
+#stats {
+	width: 100%;
+	height: 16px;
+	pointer-events: none;
+	user-select: none;
+	overflow: hidden;
+}
+
+#stats * {
+	font-size: 11px;
+	color: var(--darko-g);
+}
+
+#stats p {
+	height: 100%;
+	width: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 #uploadFile {
 	position: absolute;
 	z-index: 3;

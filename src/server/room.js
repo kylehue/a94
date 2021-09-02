@@ -23,6 +23,7 @@ class Room {
 		this.messages = [];
 		this.users = [];
 		this.confirmedUsers = [];
+		this.typingUsers = [];
 
 		this.options = {
 			name: code,
@@ -41,6 +42,21 @@ class Room {
 		let confirmedUser = this.confirmedUsers.find(u => u === userId);
 		if (confirmedUser) {
 			this.confirmedUsers.splice(this.confirmedUsers.indexOf(confirmedUser), 1);
+		}
+
+		this.removeTypingUser(userId);
+	}
+
+	addTypingUserId(userId) {
+		if (!this.typingUsers.includes(userId)) {
+			this.typingUsers.push(userId);
+		}
+	}
+
+	removeTypingUser(userId) {
+		let typingUser = this.typingUsers.find(u => u === userId);
+		if (typingUser) {
+			this.typingUsers.splice(this.typingUsers.indexOf(typingUser), 1);
 		}
 	}
 

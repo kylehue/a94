@@ -111,6 +111,55 @@ $("#composeMessage").on("click keyup keydown input", event => {
 	}
 });
 
+//Check if typing
+$("#composeMessage").on("input", event => {
+	const input = $(event.target);
+	let value = input.val();
+
+	if (value.length) {
+		client.typing();
+	} else {
+		client.afk();
+	}
+});
+
+client.socket.on("typingUsersUpdate", userIds => {
+	let stats = $("#stats p");
+	$("#stats p").empty();
+
+	if (userIds.includes(client.socket.id)) {
+		userIds.splice(userIds.indexOf(client.socket.id), 1);
+	}
+
+	if (!userIds.length) return;
+
+	if (userIds.length <= 3) {
+		for (var i = 0; i < userIds.length; i++) {
+			let userId = userIds[i];
+			let user = findUserById(userId);
+
+			if (user) {
+				let span = $("<span>");
+				span.addClass("userTag note");
+				span.data("id", userId);
+				span.text(user.text());
+
+				stats.append(span);
+			}
+
+			if (i != userIds.length - 1) {
+				stats.append(", ");
+			} else {
+				stats.append(" is");
+			}
+		}
+	} else {
+		stats.append("Several people are");
+	}
+
+	stats.append(" typing...");
+});
+
 //Hide taglist on body click
 addEventListener("mousedown", event => {
 	if (!_isDescendant(event.target, "#tagList") && event.target.id != "tagList") {
