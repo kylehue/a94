@@ -187,11 +187,12 @@ function findUserById(id) {
 
 //
 function UI_addMessage(msgData) {
+	//Don't add message is it begins with '/code' command
 	if (msgData.message.startsWith(config.commands.changeRoomCode.cmd)) {
 		return;
 	}
 
-	let wrapper = $(document.createElement("div"));
+	let wrapper = $("<div>");
 	wrapper.addClass("message flex col");
 	wrapper.data("userId", msgData.userId);
 
@@ -199,14 +200,14 @@ function UI_addMessage(msgData) {
 		wrapper.addClass("server");
 	}
 
-	let headWrapper = $(document.createElement("div"));
+	let headWrapper = $("<div>");
 	headWrapper.addClass("flex row v-center");
 
-	let username = $(document.createElement("p"));
+	let username = $("<p>");
 	username.addClass("username");
 	username.text(msgData.username);
 
-	let timestamp = $(document.createElement("p"));
+	let timestamp = $("<p>");
 	timestamp.addClass("timestamp");
 
 	let msgTimestamp = new Date(msgData.timestamp).toLocaleTimeString();
@@ -309,18 +310,18 @@ function UI_addMessage(msgData) {
 }
 
 function UI_addFile(msgData, file) {
-	let wrapper = $(document.createElement("div"));
+	let wrapper = $("<div>");
 	wrapper.addClass("message flex col");
 	wrapper.data("userId", msgData.userId);
 
-	let headWrapper = $(document.createElement("div"));
+	let headWrapper = $("<div>");
 	headWrapper.addClass("flex row v-center");
 
-	let username = $(document.createElement("p"));
+	let username = $("<p>");
 	username.addClass("username");
 	username.text(msgData.username);
 
-	let timestamp = $(document.createElement("p"));
+	let timestamp = $("<p>");
 	timestamp.addClass("timestamp");
 
 	let msgTimestamp = new Date(msgData.timestamp).toLocaleTimeString();
@@ -328,7 +329,7 @@ function UI_addFile(msgData, file) {
 	timestamp.text(msgTimestamp);
 	headWrapper.append(username, timestamp);
 
-	let fileWrapper = $(document.createElement("div"));
+	let fileWrapper = $("<div>");
 	fileWrapper.addClass("file flex row v-center");
 	fileWrapper.attr("title", file.name);
 
@@ -349,17 +350,17 @@ function UI_addFile(msgData, file) {
 		}
 	});
 
-	let fileIcon = $(document.createElement("img"));
+	let fileIcon = $("<img>");
 	fileIcon.attr("src", "assets/svg/file.svg");
 
-	let fileInfoWrapper = $(document.createElement("div"));
+	let fileInfoWrapper = $("<div>");
 	fileInfoWrapper.addClass("fileInfoWrapper flex col");
 
-	let fileName = $(document.createElement("label"));
+	let fileName = $("<label>");
 	fileName.text(file.name);
 	fileName.addClass("note file-name");
 
-	let fileSize = $(document.createElement("label"));
+	let fileSize = $("<label>");
 	fileSize.text(utils.bytesToSize(file.size));
 	fileSize.addClass("note file-size");
 
@@ -374,18 +375,18 @@ function UI_addFile(msgData, file) {
 }
 
 function UI_addImage(msgData, imgURL) {
-	let wrapper = $(document.createElement("div"));
+	let wrapper = $("<div>");
 	wrapper.addClass("message flex col");
 	wrapper.data("userId", msgData.userId);
 
-	let headWrapper = $(document.createElement("div"));
+	let headWrapper = $("<div>");
 	headWrapper.addClass("flex row v-center");
 
-	let username = $(document.createElement("p"));
+	let username = $("<p>");
 	username.addClass("username");
 	username.text(msgData.username);
 
-	let timestamp = $(document.createElement("p"));
+	let timestamp = $("<p>");
 	timestamp.addClass("timestamp");
 
 	let msgTimestamp = new Date(msgData.timestamp).toLocaleTimeString();
@@ -393,7 +394,7 @@ function UI_addImage(msgData, imgURL) {
 	timestamp.text(msgTimestamp);
 	headWrapper.append(username, timestamp);
 
-	let image = $(document.createElement("img"));
+	let image = $("<img>");
 	image.attr("src", imgURL);
 
 	image.on("click", () => {
@@ -410,18 +411,18 @@ function UI_addImage(msgData, imgURL) {
 }
 
 function UI_addVideo(msgData, vidURL) {
-	let wrapper = $(document.createElement("div"));
+	let wrapper = $("<div>");
 	wrapper.addClass("message flex col");
 	wrapper.data("userId", msgData.userId);
 
-	let headWrapper = $(document.createElement("div"));
+	let headWrapper = $("<div>");
 	headWrapper.addClass("flex row v-center");
 
-	let username = $(document.createElement("p"));
+	let username = $("<p>");
 	username.addClass("username");
 	username.text(msgData.username);
 
-	let timestamp = $(document.createElement("p"));
+	let timestamp = $("<p>");
 	timestamp.addClass("timestamp");
 
 	let msgTimestamp = new Date(msgData.timestamp).toLocaleTimeString();
@@ -429,10 +430,10 @@ function UI_addVideo(msgData, vidURL) {
 	timestamp.text(msgTimestamp);
 	headWrapper.append(username, timestamp);
 
-	let video = $(document.createElement("video"));
+	let video = $("<video>");
 	video.attr("controls", "");
 
-	let source = $(document.createElement("source"));
+	let source = $("<source>");
 	source.attr("src", vidURL);
 
 	video.append(source);
@@ -445,18 +446,18 @@ function UI_addVideo(msgData, vidURL) {
 }
 
 function UI_addAudio(msgData, audURL) {
-	let wrapper = $(document.createElement("div"));
+	let wrapper = $("<div>");
 	wrapper.addClass("message flex col");
 	wrapper.data("userId", msgData.userId);
 
-	let headWrapper = $(document.createElement("div"));
+	let headWrapper = $("<div>");
 	headWrapper.addClass("flex row v-center");
 
-	let username = $(document.createElement("p"));
+	let username = $("<p>");
 	username.addClass("username");
 	username.text(msgData.username);
 
-	let timestamp = $(document.createElement("p"));
+	let timestamp = $("<p>");
 	timestamp.addClass("timestamp");
 
 	let msgTimestamp = new Date(msgData.timestamp).toLocaleTimeString();
@@ -464,10 +465,10 @@ function UI_addAudio(msgData, audURL) {
 	timestamp.text(msgTimestamp);
 	headWrapper.append(username, timestamp);
 
-	let audio = $(document.createElement("audio"));
+	let audio = $("<audio>");
 	audio.attr("controls", "");
 
-	let source = $(document.createElement("source"));
+	let source = $("<source>");
 	source.attr("src", audURL);
 
 	audio.append(source);
@@ -496,15 +497,15 @@ function UI_addRoom(name, code) {
 	console.log(code);
 
 	//Add in UI
-	let room = $(document.createElement("button"));
+	let room = $("<button>");
 	room.attr("id", code);
 	room.data("code", code);
 	room.addClass("select-item flex row v-center room");
 
-	let roomIcon = $(document.createElement("img"));
+	let roomIcon = $("<img>");
 	roomIcon.attr("src", "assets/svg/chat-bubble.svg");
 
-	let roomName = $(document.createElement("span"));
+	let roomName = $("<span>");
 	roomName.text(name);
 
 	room.append(roomIcon, roomName);
@@ -555,33 +556,33 @@ function sortUsers() {
 }
 
 function UI_addUser(userData, ignoreAppend) {
-	let userWrapper = $(document.createElement("div"));
+	let userWrapper = $("<div>");
 	userWrapper.addClass("user flex row v-center");
 	userWrapper.data("id", userData.id);
 
-	let userIcon = $(document.createElement("img"));
+	let userIcon = $("<img>");
 	userIcon.addClass("user-icon");
 	userIcon.attr("src", "assets/svg/user.svg");
 
-	let username = $(document.createElement("label"));
+	let username = $("<label>");
 	username.addClass("username");
 	username.text(userData.name);
 
 	userWrapper.append(userIcon, username);
 
 	if (userData.pending) {
-		let confirmButton = $(document.createElement("button"));
+		let confirmButton = $("<button>");
 		confirmButton.addClass("validate confirm flex row center");
 
-		let confirmButtonIcon = $(document.createElement("img"));
+		let confirmButtonIcon = $("<img>");
 		confirmButtonIcon.attr("src", "assets/svg/check-green.svg");
 
 		confirmButton.append(confirmButtonIcon);
 
-		let declineButton = $(document.createElement("button"));
+		let declineButton = $("<button>");
 		declineButton.addClass("validate decline flex row center");
 
-		let declineButtonIcon = $(document.createElement("img"));
+		let declineButtonIcon = $("<img>");
 		declineButtonIcon.attr("src", "assets/svg/cross-red.svg");
 
 		declineButton.append(declineButtonIcon);

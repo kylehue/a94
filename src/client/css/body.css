@@ -36,7 +36,7 @@
 }
 
 #messages .message.server {
-	background: var(--messageHighlight);
+	background: var(--serverMessageHighlight);
 }
 
 #messages .tags {

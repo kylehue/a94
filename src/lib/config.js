@@ -14,7 +14,7 @@ module.exports = {
 		},
 		changeRoomCode: {
 			cmd: "/code",
-			description: "Modify the room's secret code."
+			description: "Modify the room's secret code. Only the room owner can use this command."
 		},
 		promoteUser: {
 			cmd: "/promote",

@@ -241,12 +241,8 @@ io.on("connection", socket => {
 						type: "server"
 					};
 
-					let sendServerMsg = false;
-
 					//Help
 					if (msgTrim == "/help") {
-						sendServerMsg = true;
-
 						let helpMsg = "";
 						let commands = Object.values(config.commands);
 
@@ -263,20 +259,23 @@ io.on("connection", socket => {
 						}
 
 						serverMsg.message = helpMsg;
+						socket.emit("serverMessage", serverMsg);
 					}
 
 					//Lock room
 					if (msgTrim == config.commands.lockRoom.cmd) {
 						room.options.locked = true;
-						sendServerMsg = true;
 						serverMsg.message = "Room is now locked.";
+						io.in(room.code).emit("serverMessage", serverMsg);
+						room.addMessage(serverMsg);
 					}
 
 					//Unlock room
 					if (msgTrim == config.commands.unlockRoom.cmd) {
 						room.options.locked = false;
-						sendServerMsg = true;
 						serverMsg.message = "Room is now unlocked.";
+						io.in(room.code).emit("serverMessage", serverMsg);
+						room.addMessage(serverMsg);
 
 						for (var i = 0; i < room.users.length; i++) {
 							let user = room.users[i];
@@ -301,8 +300,9 @@ io.on("connection", socket => {
 								room.options.name = newName;
 
 								//Notify
-								sendServerMsg = true;
 								serverMsg.message = "Room name is set to '" + newName + "'";
+								io.in(room.code).emit("serverMessage", serverMsg);
+								room.addMessage(serverMsg);
 
 								//Change clients' room UI text
 								let userIds = findUserIdsByRoomCode(room.code);
@@ -314,7 +314,7 @@ io.on("connection", socket => {
 					}
 
 					//Change/Get room code
-					if (msgTrim.startsWith(config.commands.changeRoomCode.cmd)) {
+					if (user.host && msgTrim.startsWith(config.commands.changeRoomCode.cmd)) {
 						let newCode = msgTrim.split(" ");
 						newCode.shift();
 						newCode = newCode.join(" ");
@@ -366,13 +366,14 @@ io.on("connection", socket => {
 						if (msgTrim.startsWith(config.commands.promoteUser.cmd)) {
 							for (var i = 0; i < mentions.length; i++) {
 								let mentionId = mentions[i];
-								let user = room.getUser(mentionId);
-								if (user) {
-									if (!user.admin && !user.host) {
-										user.admin = true;
+								let mentionedUser = room.getUser(mentionId);
+								if (mentionedUser) {
+									if (!mentionedUser.admin && !mentionedUser.host) {
+										mentionedUser.admin = true;
 
-										sendServerMsg = true;
-										serverMsg.message = "<@" + user.id + "> has been promoted to Admin.";
+										serverMsg.message = "<@" + mentionedUser.id + "> has been promoted to Admin.";
+										io.in(room.code).emit("serverMessage", serverMsg);
+										room.addMessage(serverMsg);
 									}
 								}
 							}
@@ -382,13 +383,14 @@ io.on("connection", socket => {
 						if (msgTrim.startsWith(config.commands.demoteUser.cmd)) {
 							for (var i = 0; i < mentions.length; i++) {
 								let mentionId = mentions[i];
-								let user = room.getUser(mentionId);
-								if (user) {
-									if (user.admin && !user.host) {
-										user.admin = false;
+								let mentionedUser = room.getUser(mentionId);
+								if (mentionedUser) {
+									if (mentionedUser.admin && !mentionedUser.host) {
+										mentionedUser.admin = false;
 
-										sendServerMsg = true;
-										serverMsg.message = "<@" + user.id + "> has been demoted.";
+										serverMsg.message = "<@" + mentionedUser.id + "> has been demoted.";
+										io.in(room.code).emit("serverMessage", serverMsg);
+										room.addMessage(serverMsg);
 									}
 								}
 							}
@@ -398,30 +400,25 @@ io.on("connection", socket => {
 						if (msgTrim.startsWith(config.commands.kickUser.cmd)) {
 							for (var i = 0; i < mentions.length; i++) {
 								let mentionId = mentions[i];
-								let user = room.getUser(mentionId);
-								if (user) {
-									if (!user.admin && !user.host) {
-										room.removeUser(user.id);
-										io.to(user.id).emit("clientKicked", room.code);
+								let mentionedUser = room.getUser(mentionId);
+								if (mentionedUser) {
+									if (!mentionedUser.admin && !mentionedUser.host) {
+										room.removeUser(mentionedUser.id);
+										io.to(mentionedUser.id).emit("clientKicked", room.code);
 										io.in(room.code).emit("updateUsers", room.users);
 
 										//Notify kicked user
-										serverMsg.message = "You have been kicked.";
-										io.to(user.id).emit("serverMessage", serverMsg);
+										serverMsg.message = "You has been kicked.";
+										io.to(mentionedUser.id).emit("serverMessage", serverMsg);
 
 										//Notify everyone
-										sendServerMsg = true;
-										serverMsg.message = user.name + " has been kicked.";
+										serverMsg.message = mentionedUser.name + " has been kicked.";
+										io.in(room.code).emit("serverMessage", serverMsg);
+										room.addMessage(serverMsg);
 									}
 								}
 							}
 						}
-					}
-
-					//Send server message
-					if (sendServerMsg) {
-						io.in(room.code).emit("serverMessage", serverMsg);
-						room.addMessage(serverMsg);
 					}
 				}
 			}
