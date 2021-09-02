@@ -76,7 +76,7 @@ $("#composeMessage").on("input", event => {
 	const textArea = $(event.target);
 	const parent = textArea.closest(".textArea");
 	const placeholder = parent.find("label.placeholder");
-	let value = textArea.text();
+	let value = textArea.val();
 	if (value.length) {
 		placeholder.addClass("hidden");
 	} else {

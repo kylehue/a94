@@ -39,12 +39,7 @@ const tagList = new Vue({
 			this.hidden = false;
 
 			this.$nextTick(() => {
-				let users = $("#users .user");
-
-				for (var i = 0; i < users.length; i++) {
-					let user = $(users[i]);
-					addTag(user.data("id"), user.text());
-				}
+				this.search("");
 			});
 		},
 		hide() {
@@ -95,6 +90,17 @@ const tagList = new Vue({
 				let user = $(users[i]);
 				let userId = user.data("id");
 				let username = user.text();
+
+				//Skip if the user is already tagged
+				let mentions = [];
+				let mentionedUsers = $("#tags .tag");
+				for (var j = 0; j < mentionedUsers.length; j++) {
+					let user = $(mentionedUsers[j]);
+					let id = user.data("id");
+					mentions.push(id);
+				}
+
+				if (mentions.includes(userId)) continue;
 
 				//Check if user matches search str
 				if (username.toLowerCase().includes(searchStr.toLowerCase())) {

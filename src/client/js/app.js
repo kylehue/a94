@@ -41,19 +41,22 @@ $("#username").on("keydown", event => {
 
 $("#composeMessage").on("keydown", event => {
 	const input = $(event.target);
-	let msg = input.text();
+	let msg = input.val();
 	if (event.keyCode == 13 && !event.shiftKey) {
 		event.preventDefault();
 
 		if (tagList.hidden) {
-			if (msg.length) client.sendMessage(msg);
+			if (msg.length) {
+				client.sendMessage(msg);
+			}
 
-			input.text("");
-			input.trigger("input");
-			autosize.update(input);
+			input.val("");
 		} else {
 			$("#tagList button.active").trigger("click");
 		}
+
+		input.trigger("input");
+		autosize.update(input);
 	} else if (event.keyCode == 38) {
 		if (!tagList.hidden) {
 			event.preventDefault();
@@ -68,9 +71,9 @@ $("#composeMessage").on("keydown", event => {
 });
 
 //Check if tagging
-$("#composeMessage").on("click keyup input", event => {
+$("#composeMessage").on("click keyup keydown input", event => {
 	const input = $(event.target);
-	let value = input.text().replace(/\s/g, " ");
+	let value = input.val().replace(/\s/g, " ");
 	let caret = input.caret();
 
 	//Search for '@'
@@ -138,7 +141,7 @@ function addTag(id, name) {
 
 events.on("tagUser", (id, name) => {
 	let input = $("#composeMessage");
-	let value = input.text();
+	let value = input.val();
 	let caret = input.caret();
 
 	//Delete tag text
@@ -153,14 +156,16 @@ events.on("tagUser", (id, name) => {
 
 	//If there's an '@' before the caret
 	if (typeof atIndex == "number") {
+		addTag(id, name);
+
 		let left = value.substring(0, atIndex);
 		let right = value.substring(caret);
 
-		input.text(left + right);
-		input.focus();
+		input.val(left + right);
 		input.caret(atIndex);
 
-		addTag(id, name);
+		console.log(atIndex);
+
 	}
 });
 
@@ -197,6 +202,53 @@ function UI_addMessage(msgData) {
 	let message = $(document.createElement("p"));
 	message.text(msgData.message);
 	wrapper.append(headWrapper, message);
+
+	if (msgData.mentions.length) {
+		let tagsWrapper = $("<div>");
+		tagsWrapper.addClass("tags flex row");
+
+		let tagsParagraph = $("<p>");
+		tagsParagraph.addClass("note");
+		tagsParagraph.text("To: ");
+
+		for (var i = 0; i < msgData.mentions.length; i++) {
+			let mentionId = msgData.mentions[i];
+			let username = undefined;
+
+			//Find username using the mention id
+			let users = $("#users .user");
+			for (var j = 0; j < users.length; j++) {
+				let user = $(users[j]);
+				let id = user.data("id");
+				if (id === mentionId) {
+					username = user.text();
+					break;
+				}
+			}
+
+			if (mentionId === client.socket.id) {
+				username += " (YOU)";
+			}
+
+			let tag = $("<span>");
+			tag.data("id", mentionId);
+			tag.addClass("tag note");
+			tag.text(username);
+			tagsParagraph.append(tag);
+
+			if (i != msgData.mentions.length - 1) {
+				tagsParagraph.append(", ");
+			}
+		}
+
+		tagsWrapper.append(tagsParagraph);
+		wrapper.append(tagsWrapper);
+	}
+
+	//Highlight message if mentioned
+	if (msgData.mentions.includes(client.socket.id)) {
+		wrapper.addClass("mentioned");
+	}
 
 	let messagesWrapper = $("#chatApp #messages");
 	messagesWrapper.append(wrapper);
@@ -529,6 +581,19 @@ client.socket.on("roomUsernameChange", _user => {
 		}
 	}
 
+	//Update username in message mentions
+	let tags = $("#messages .tags .tag");
+	for (var i = 0; i < tags.length; i++) {
+		let tag = $(tags[i]);
+		if (tag.data("id") === _user.id) {
+			if (_user.id === client.socket.id) {
+				tag.text(_user.name + " (YOU)");
+			} else {
+				tag.text(_user.name);
+			}
+		}
+	}
+
 	sortUsers();
 });
 
@@ -731,6 +796,9 @@ $("#tags").on("change", () => {
 	} else {
 		$("#tags").removeClass("hidden");
 	}
+
+	let messagesWrapper = $("#messages");
+	messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
 });
 
 $("#overlay, #imagePreviewApp").on("click", () => {
@@ -791,9 +859,6 @@ window.addEventListener("keydown", event => {
 
 //TODO
 /*
- *File messages inaccurate order
- *Progress bar on upload
- *Fix chat paragraph wrapping
  *Remove unnecessary fonts
  *Select box adjust position when getting blocked
  *Character limit

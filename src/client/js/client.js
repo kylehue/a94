@@ -72,11 +72,6 @@ class Client {
 				this.socket.emit("reloadRoom", roomCode);
 			}
 		});
-
-		this.socket.on("bruh", time => {
-			console.log("FSEFASEFSEFES")
-			console.log(time)
-		});
 	}
 
 	confirmUser(userId) {
@@ -102,12 +97,26 @@ class Client {
 
 	sendMessage(message) {
 		if (this.roomCode) {
+
+			//Get mentions
+			let mentions = [];
+			let mentionedUsers = $("#tags .tag");
+			for(var i = 0; i < mentionedUsers.length; i++){
+				let user = $(mentionedUsers[i]);
+				let id = user.data("id");
+				mentions.push(id);
+			}
+
+			//Clear mentions
+			mentionedUsers.trigger("click");
+
 			let msgData = {
+				type: "client",
 				userId: this.socket.id,
 				username: this.username,
 				timestamp: Date.now(),
 				message,
-				type: "client"
+				mentions
 			};
 
 			this.socket.emit("sendMessage", this.roomCode, msgData);
@@ -117,9 +126,6 @@ class Client {
 	sendFile(file) {
 		let chunkSize = 10024;
 		let uploadId = utils.uid();
-
-		console.log("SENDING THIS FILE");
-		console.log(file);
 
 		if (this.roomCode) {
 			let reader = new FileReader();

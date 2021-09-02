@@ -128,13 +128,16 @@
 						</div>
 						<p>Hello guys</p>
 					</div>
-					<div class="message flex col">
+					<div class="message flex col mentioned">
 						<div class="flex row v-center">
 							<p class="username">getrekt47</p>
 							<p class="timestamp">10:39 AM</p>
 						</div>
 						<p>hey there! what's up? btw here's an image of spongebob</p>
 						<img src="assets/images/2pliq2.jpg">
+						<div class="tags flex row">
+							<p class="note">To: <span>user1</span>, <span>eren</span>, <span>Mikasa Ackerman</span>, <span>Armin</span>, <span>69PSY</span>, <span>val</span></p>
+						</div>
 					</div>
 					<div class="message flex col">
 						<div class="flex row v-center">
@@ -335,7 +338,7 @@
 						</button>
 					</div>
 					<label class="placeholder">Type here...</label>
-					<div contentEditable="true" id="composeMessage" class="auto-height default" rows="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div>
+					<textarea id="composeMessage" class="auto-height default" rows="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
 				</div>
 			</div>
 			<div id="users" class="flex col h-center">

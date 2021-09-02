@@ -31,8 +31,22 @@
 	border-radius: 5px;
 }
 
+#messages .message.mentioned {
+	background: var(--messageHighlight);
+}
+
 #messages .message.server {
-	background: rgba(233, 212, 96, 0.1);
+	background: var(--messageHighlight);
+}
+
+#messages .tags {
+	width: 100%;
+	height: fit-content;
+	margin-top: 2.5px;
+}
+
+#messages .tags p, #messages .tags span {
+	font-size: 10px;
 }
 
 #messages .message > p {
@@ -55,11 +69,16 @@
 	margin-top: 5px;
 	border-radius: 5px;
 	cursor: pointer;
-	height: 250px;
+	width: fit-content;
+	max-width: 100%;
+	max-height: 250px;
+	object-fit: contain;
 	pointer-events: all;
 }
 
 #messages .message > audio {
+	width: 100%;
+	max-width: 250px;
 	height: 40px;
 }
 
