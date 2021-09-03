@@ -86,6 +86,55 @@ class Room {
 
 		return file;
 	}
+
+	getMessagesBefore(messageId, amount) {
+		amount = amount || 10;
+
+		let messages = [];
+
+		let isBefore = false;
+		
+		this.messages.sort((a, b) => a.timestamp - b.timestamp);
+		for(var i = this.messages.length - 1; i >= 0; i--){
+			let msg = this.messages[i];
+			if (msg.id === messageId) {
+				isBefore = true;
+			} else if (isBefore) {
+				messages.push(msg);
+			}
+
+			if (messages.length >= amount) {
+				break;
+			}
+		}
+
+		return messages;
+	}
+
+	getMessagesAfter(messageId, amount) {
+		amount = amount || 10;
+
+		let messages = [];
+
+		let isAfter = false;
+
+		this.messages.sort((a, b) => a.timestamp - b.timestamp);
+		for(var i = 0; i < this.messages.length; i++){
+			let msg = this.messages[i];
+
+			if (msg.id === messageId) {
+				isAfter = true;
+			} else if (isAfter) {
+				messages.push(msg);
+			}
+
+			if (messages.length >= amount) {
+				break;
+			}
+		}
+
+		return messages;
+	}
 }
 
 module.exports = Room;

@@ -23,8 +23,8 @@ const codes = [];
 const rooms = [];
 
 //Functions
-function getCode() {
-	let length = 4;
+function getCode(length) {
+	length = length || 4;
 	let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	let code = "";
 
@@ -88,6 +88,7 @@ function sendServerMessage(roomCode, message, save) {
 
 	if (room) {
 		let msg = {
+			id: getCode(12),
 			type: "server",
 			username: "Server",
 			timestamp: Date.now(),
@@ -112,6 +113,35 @@ io.on("connection", socket => {
 			room.removeUser(socket.id);
 			io.in(room.code).emit("updateUsers", room.users);
 			io.in(room.code).emit("typingUsersUpdate", room.typingUsers);
+		}
+	});
+
+	socket.on("loadMessagesBefore", (roomCode, messageId, amount) => {
+		let room = rooms.find(rm => rm.code === roomCode);
+
+		if (room) {
+			let messages = room.getMessagesBefore(messageId, amount);
+			messages.sort((a, b) => a.timestamp - b.timestamp);
+
+			if (messages.length) {
+				if (messages[0].id !== messageId) {
+					socket.emit("deliverMessagesBefore", messages);
+				}
+			}
+		}
+	});
+
+	socket.on("loadMessagesAfter", (roomCode, messageId, amount) => {
+		let room = rooms.find(rm => rm.code === roomCode);
+
+		if (room) {
+			let messages = room.getMessagesAfter(messageId, amount);
+
+			if (messages.length) {
+				if (messages[messages.length - 1].id !== messageId) {
+					socket.emit("deliverMessagesAfter", messages);
+				}
+			}
 		}
 	});
 
@@ -257,6 +287,8 @@ io.on("connection", socket => {
 		if (room) {
 			let user = room.getUser(socket.id);
 
+			msgData.id = getCode(12);
+
 			room.addMessage(msgData);
 			io.in(room.code).emit("newMessage", msgData);
 
@@ -265,6 +297,7 @@ io.on("connection", socket => {
 				if (user.host || user.admin) {
 					let msgTrim = msgData.message.trim().toLowerCase();
 					let serverMsg = {
+						id: getCode(12),
 						username: "Server",
 						timestamp: Date.now(),
 						message: "",
@@ -506,6 +539,7 @@ io.on("connection", socket => {
 						metadata
 					};
 
+					msgData.id = getCode(12);
 					msgData.attachment = attachment;
 					msgData.timestamp = Date.now();
 

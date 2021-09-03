@@ -241,7 +241,9 @@ function isScrolledToBottom(el) {
 }
 
 //
-function UI_addMessage(msgData) {
+function UI_addMessage(msgData, options) {
+	options = options || {};
+
 	//Don't add message is it begins with '/code' command
 	if (msgData.message.startsWith(config.commands.changeRoomCode.cmd)) {
 		return;
@@ -252,6 +254,7 @@ function UI_addMessage(msgData) {
 	let wrapper = $("<div>");
 	wrapper.addClass("message flex col");
 	wrapper.data("userId", msgData.userId);
+	wrapper.data("messageId", msgData.id);
 
 	if (msgData.type == "server") {
 		wrapper.addClass("server");
@@ -271,7 +274,6 @@ function UI_addMessage(msgData) {
 	msgTimestamp = msgTimestamp.replace(/:[0-9]\d\s/, " ");
 	timestamp.text(msgTimestamp);
 	headWrapper.append(username, timestamp);
-
 
 	//Check words for user ids
 	let words = msgData.message.split(" ");
@@ -362,19 +364,138 @@ function UI_addMessage(msgData) {
 	}
 
 	let messagesWrapper = $("#chatApp #messages");
-	messagesWrapper.append(wrapper);
+
+	if (options.prepend) {
+		messagesWrapper.prepend(wrapper);
+	} else {
+		messagesWrapper.append(wrapper);
+	}
+
+	if (options.maintainMaxMessages) {
+		//Maintain max messages
+		let messages = $("#messages .message");
+		if (messages.length > config.maxMessages) {
+			messages.first().remove();
+		}
+	}
 
 	if (_isScrolledToBottom) {
-		messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
+		messagesWrapper.scrollTop($("#messages")[0].scrollHeight);
+	}
+
+	return wrapper;
+}
+
+// $("#messages").scroll(event => {
+// 	let below = isScrolledToBottom(event.target);
+// 	let above = event.target.scrollTop < 20;
+
+// 	if (above) {
+// 		let firstMessage = $("#messages .message").first();
+// 		let firstMessageId = firstMessage.data("messageId");
+
+// 		if (firstMessageId) {
+// 			client.loadMessagesBefore(firstMessageId, config.maxMessages);
+// 		} else {
+// 			console.warn("Couldn't get first message id")
+// 		}
+// 	} else if (below) {
+// 		let lastMessage = $("#messages .message").last();
+// 		let lastMessageId = lastMessage.data("messageId");
+
+// 		if (lastMessageId) {
+// 			client.loadMessagesAfter(lastMessageId, config.maxMessages);
+// 		} else {
+// 			console.warn("Couldn't get first message id")
+// 		}
+// 	}
+// });
+
+// client.socket.on("deliverMessagesBefore", messages => {
+// 	messages.sort((a, b) => a.timestamp - b.timestamp);
+
+// 	console.log("deliverMessagesBefore");
+// 	console.log(messages);
+
+// 	let newMessagesHeight = 0;
+// 	let firstEl;
+
+// 	for (var i = messages.length - 1; i >= 0; i--) {
+// 		let msgData = messages[i];
+// 		let msgEl;
+
+// 		if (msgData.attachment) {
+// 			msgEl = addMessageFiles(msgData, {
+// 				maintainMaxMessages: false,
+// 				prepend: true
+// 			});
+// 		} else {
+// 			msgEl = UI_addMessage(msgData, {
+// 				prepend: true,
+// 				maintainMaxMessages: false
+// 			});
+// 		}
+
+// 		if (i == messages.length - 1) {
+// 			firstEl = msgEl;
+// 		}
+
+// 		/*newMessagesHeight += $(msgEl).outerHeight(true);
+
+// 		$("#messages .message").last().remove();*/
+// 	}
+
+// 	let targetScroll = firstEl.offset().top;
+// 	if (targetScroll > 30) {
+// 		$("#messages").scrollTop(targetScroll);
+// 	}
+// });
+
+// client.socket.on("deliverMessagesAfter", messages => {
+// 	messages.sort((a, b) => a.timestamp - b.timestamp);
+// 	console.log("deliverMessagesAfter");
+// 	console.log(messages);
+
+// 	/*let newMessagesHeight = 0;
+
+// 	for (var i = 0; i < messages.length; i++) {
+// 		let msgData = messages[i];
+
+// 		if (msgData.attachment) {
+// 			addMessageFiles(msgData, {
+// 				maintainMaxMessages: false
+// 			});
+
+// 		} else {
+// 			let msgEl = UI_addMessage(msgData, {
+// 				maintainMaxMessages: false
+// 			});
+
+// 			newMessagesHeight += $(msgEl).outerHeight(true);
+// 		}
+
+// 		//$("#messages .message").first().remove();
+// 	}
+
+// 	$("#messages").scrollTop($("#messages")[0].scrollHeight - $("#messages").outerHeight() - newMessagesHeight);*/
+// });
+
+window.spam = (count) => {
+	count = count || 100;
+	for (var i = 0; i < count; i++) {
+		client.sendMessage(i.toString());
 	}
 }
 
-function UI_addFile(msgData, file) {
+function UI_addFile(msgData, file, options) {
+	options = options || {};
+
 	let _isScrolledToBottom = isScrolledToBottom($("#messages")[0]);
 
 	let wrapper = $("<div>");
 	wrapper.addClass("message flex col");
 	wrapper.data("userId", msgData.userId);
+	wrapper.data("messageId", msgData.id);
 
 	let headWrapper = $("<div>");
 	headWrapper.addClass("flex row v-center");
@@ -432,17 +553,38 @@ function UI_addFile(msgData, file) {
 	wrapper.append(headWrapper, fileWrapper);
 
 	let messagesWrapper = $("#chatApp #messages");
-	messagesWrapper.append(wrapper);
-
-	if (_isScrolledToBottom) {
-		messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
+	if (options.prepend) {
+		messagesWrapper.prepend(wrapper);
+	} else {
+		messagesWrapper.append(wrapper);
 	}
+
+	if (options.maintainMaxMessages) {
+		//Maintain max messages
+		let messages = $("#messages .message");
+		if (messages.length > config.maxMessages) {
+			messages.first().remove();
+		}
+	}
+
+	fileIcon.on("load", () => {
+		if (_isScrolledToBottom) {
+			$("#messages").scrollTop($("#messages")[0].scrollHeight);
+		}
+	});
+
+	return wrapper;
 }
 
-function UI_addImage(msgData, imgURL) {
+function UI_addImage(msgData, imgURL, options) {
+	options = options || {};
+
+	let _isScrolledToBottom = isScrolledToBottom($("#messages")[0]);
+
 	let wrapper = $("<div>");
 	wrapper.addClass("message flex col");
 	wrapper.data("userId", msgData.userId);
+	wrapper.data("messageId", msgData.id);
 
 	let headWrapper = $("<div>");
 	headWrapper.addClass("flex row v-center");
@@ -471,14 +613,41 @@ function UI_addImage(msgData, imgURL) {
 	wrapper.append(headWrapper, image);
 
 	let messagesWrapper = $("#chatApp #messages");
-	messagesWrapper.append(wrapper);
-	messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
+	if (options.prepend) {
+		messagesWrapper.prepend(wrapper);
+	} else {
+		messagesWrapper.append(wrapper);
+	}
+
+	if (options.maintainMaxMessages) {
+		//Maintain max messages
+		let messages = $("#messages .message");
+		if (messages.length > config.maxMessages) {
+			messages.first().remove();
+		}
+	}
+
+	console.log("seifseoifesoifnesoifseofnsois")
+	console.log(_isScrolledToBottom);
+
+	image.on("load", () => {
+		if (_isScrolledToBottom) {
+			$("#messages").scrollTop($("#messages")[0].scrollHeight);
+		}
+	});
+
+	return wrapper;
 }
 
-function UI_addVideo(msgData, vidURL) {
+function UI_addVideo(msgData, vidURL, options) {
+	options = options || {};
+
+	let _isScrolledToBottom = isScrolledToBottom($("#messages")[0]);
+
 	let wrapper = $("<div>");
 	wrapper.addClass("message flex col");
 	wrapper.data("userId", msgData.userId);
+	wrapper.data("messageId", msgData.id);
 
 	let headWrapper = $("<div>");
 	headWrapper.addClass("flex row v-center");
@@ -506,14 +675,38 @@ function UI_addVideo(msgData, vidURL) {
 	wrapper.append(headWrapper, video);
 
 	let messagesWrapper = $("#chatApp #messages");
-	messagesWrapper.append(wrapper);
-	messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
+	if (options.prepend) {
+		messagesWrapper.prepend(wrapper);
+	} else {
+		messagesWrapper.append(wrapper);
+	}
+
+	if (options.maintainMaxMessages) {
+		//Maintain max messages
+		let messages = $("#messages .message");
+		if (messages.length > config.maxMessages) {
+			messages.first().remove();
+		}
+	}
+
+	video.on("load", () => {
+		if (_isScrolledToBottom) {
+			$("#messages").scrollTop($("#messages")[0].scrollHeight);
+		}
+	});
+
+	return wrapper;
 }
 
-function UI_addAudio(msgData, audURL) {
+function UI_addAudio(msgData, audURL, options) {
+	options = options || {};
+
+	let _isScrolledToBottom = isScrolledToBottom($("#messages")[0]);
+
 	let wrapper = $("<div>");
 	wrapper.addClass("message flex col");
 	wrapper.data("userId", msgData.userId);
+	wrapper.data("messageId", msgData.id);
 
 	let headWrapper = $("<div>");
 	headWrapper.addClass("flex row v-center");
@@ -541,8 +734,28 @@ function UI_addAudio(msgData, audURL) {
 	wrapper.append(headWrapper, audio);
 
 	let messagesWrapper = $("#chatApp #messages");
-	messagesWrapper.append(wrapper);
-	messagesWrapper.scrollTop(messagesWrapper[0].scrollHeight);
+
+	if (options.prepend) {
+		messagesWrapper.prepend(wrapper);
+	} else {
+		messagesWrapper.append(wrapper);
+	}
+
+	if (options.maintainMaxMessages) {
+		//Maintain max messages
+		let messages = $("#messages .message");
+		if (messages.length > config.maxMessages) {
+			messages.first().remove();
+		}
+	}
+
+	audio.on("load", () => {
+		if (_isScrolledToBottom) {
+			$("#messages").scrollTop($("#messages")[0].scrollHeight);
+		}
+	});
+
+	return wrapper;
 }
 
 function UI_addRoom(name, code) {
@@ -588,7 +801,9 @@ function enterRoom(roomData) {
 	let messages = roomData.messages;
 	for (var i = 0; i < messages.length; i++) {
 		let msg = messages[i];
-		UI_addMessage(msg);
+		UI_addMessage(msg, {
+			maintainMaxMessages: true
+		});
 	}
 
 	//Clear users
@@ -760,7 +975,7 @@ client.socket.on("updateUsers", serverUsers => {
 	updateUserCount(serverUsers.length);
 });
 
-function addMessageFiles(msgData) {
+function addMessageFiles(msgData, options) {
 	let attachment = msgData.attachment;
 	let metadata = attachment.metadata;
 	let file = new File([attachment.buffer], metadata.name, {
@@ -771,13 +986,13 @@ function addMessageFiles(msgData) {
 	let url = URL.createObjectURL(file);
 
 	if (file.type.startsWith("image")) {
-		UI_addImage(msgData, url);
+		return UI_addImage(msgData, url, options);
 	} else if (file.type.startsWith("video")) {
-		UI_addVideo(msgData, url);
+		return UI_addVideo(msgData, url, options);
 	} else if (file.type.startsWith("audio")) {
-		UI_addAudio(msgData, url);
+		return UI_addAudio(msgData, url, options);
 	} else {
-		UI_addFile(msgData, file);
+		return UI_addFile(msgData, file, options);
 	}
 
 	console.log(file);
@@ -787,14 +1002,27 @@ function addMessageFiles(msgData) {
 client.socket.on("updateMessages", messages => {
 	console.log("updateMessages");
 	$("#messages .message").remove();
+
 	messages.sort((a, b) => a.timestamp - b.timestamp);
+
+	for(var i = 0; i < messages.length; i++){
+		messages.shift();
+		if (i >= config.maxMessages) {
+			break;
+		}
+	}
+
 	for (var i = 0; i < messages.length; i++) {
 		let msg = messages[i];
 
 		if (msg.attachment) {
-			addMessageFiles(msg);
+			addMessageFiles(msg, {
+				maintainMaxMessages: true
+			});
 		} else {
-			UI_addMessage(msg);
+			UI_addMessage(msg, {
+				maintainMaxMessages: true
+			});
 		}
 	}
 
@@ -830,13 +1058,17 @@ client.socket.on("updateRoomPending", roomData => {
 client.socket.on("newMessage", msgData => {
 	console.log("newMessage");
 	console.log(msgData)
-	UI_addMessage(msgData);
+	UI_addMessage(msgData, {
+		maintainMaxMessages: true
+	});
 });
 
 client.socket.on("serverMessage", msgData => {
 	console.log("serverMessage");
 	console.log(msgData);
-	UI_addMessage(msgData);
+	UI_addMessage(msgData, {
+		maintainMaxMessages: true
+	});
 });
 
 client.socket.on("roomNameChange", (roomCode, roomName) => {
