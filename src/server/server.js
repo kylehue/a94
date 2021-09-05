@@ -95,11 +95,11 @@ function sendServerMessage(roomCode, message, save) {
 			message
 		};
 
-		io.in(room.code).emit("serverMessage", msg);
-
 		if (save) {
 			room.addMessage(msg);
 		}
+
+		io.in(room.code).emit("serverMessage", msg);
 	}
 }
 
@@ -113,35 +113,6 @@ io.on("connection", socket => {
 			room.removeUser(socket.id);
 			io.in(room.code).emit("updateUsers", room.users);
 			io.in(room.code).emit("typingUsersUpdate", room.typingUsers);
-		}
-	});
-
-	socket.on("loadMessagesBefore", (roomCode, messageId, amount) => {
-		let room = rooms.find(rm => rm.code === roomCode);
-
-		if (room) {
-			let messages = room.getMessagesBefore(messageId, amount);
-			messages.sort((a, b) => a.timestamp - b.timestamp);
-
-			if (messages.length) {
-				if (messages[0].id !== messageId) {
-					socket.emit("deliverMessagesBefore", messages);
-				}
-			}
-		}
-	});
-
-	socket.on("loadMessagesAfter", (roomCode, messageId, amount) => {
-		let room = rooms.find(rm => rm.code === roomCode);
-
-		if (room) {
-			let messages = room.getMessagesAfter(messageId, amount);
-
-			if (messages.length) {
-				if (messages[messages.length - 1].id !== messageId) {
-					socket.emit("deliverMessagesAfter", messages);
-				}
-			}
 		}
 	});
 
@@ -185,6 +156,8 @@ io.on("connection", socket => {
 			isNewUser = true;
 		}
 
+		console.log(room);
+
 		//If the room is empty, the first person becomes the host
 		if (!room.users.length) {
 			user.host = true;
@@ -212,14 +185,14 @@ io.on("connection", socket => {
 		socket.emit("updateRoom", room);
 
 		if (!user.pending) {
-			socket.join(room.code);
-			socket.emit("updateUsers", room.users);
-			socket.emit("updateMessages", room.messages);
-
 			//Notify people in the room that there's a new user
 			if (isNewUser) {
 				sendServerMessage(room.code, `<@${user.id}> has joined.`, true);
 			}
+
+			socket.join(room.code);
+			socket.emit("updateUsers", room.users);
+			socket.emit("updateMessages", room.messages);
 		} else {
 			socket.emit("updateRoomPending", room);
 		}
@@ -550,11 +523,6 @@ io.on("connection", socket => {
 			});
 		}
 	});
-
-
-
-
-
 
 
 });

@@ -95,14 +95,6 @@ class Client {
 		});
 	}
 
-	loadMessagesBefore(messageId, amount) {
-		this.socket.emit("loadMessagesBefore", this.roomCode, messageId, amount);
-	}
-
-	loadMessagesAfter(messageId, amount) {
-		this.socket.emit("loadMessagesAfter", this.roomCode, messageId, amount);
-	}
-
 	typing() {
 		this.socket.emit("userTyping", this.roomCode);
 	}

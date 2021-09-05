@@ -1,4 +1,5 @@
 const utils = require("./../lib/utils.js");
+const config = require("./../lib/config.js");
 
 class RoomFile {
 	constructor(metadata) {
@@ -29,8 +30,6 @@ class Room {
 			name: code,
 			locked: false
 		};
-
-		this.files = [];
 	}
 
 	removeUser(userId) {
@@ -79,61 +78,16 @@ class Room {
 
 	addMessage(data) {
 		this.messages.push(data);
+
+		if (this.messages.length > config.maxMessages) {
+			this.messages.shift();
+		}
 	}
 
 	createFile(metadata) {
 		let file = new RoomFile(metadata);
 
 		return file;
-	}
-
-	getMessagesBefore(messageId, amount) {
-		amount = amount || 10;
-
-		let messages = [];
-
-		let isBefore = false;
-		
-		this.messages.sort((a, b) => a.timestamp - b.timestamp);
-		for(var i = this.messages.length - 1; i >= 0; i--){
-			let msg = this.messages[i];
-			if (msg.id === messageId) {
-				isBefore = true;
-			} else if (isBefore) {
-				messages.push(msg);
-			}
-
-			if (messages.length >= amount) {
-				break;
-			}
-		}
-
-		return messages;
-	}
-
-	getMessagesAfter(messageId, amount) {
-		amount = amount || 10;
-
-		let messages = [];
-
-		let isAfter = false;
-
-		this.messages.sort((a, b) => a.timestamp - b.timestamp);
-		for(var i = 0; i < this.messages.length; i++){
-			let msg = this.messages[i];
-
-			if (msg.id === messageId) {
-				isAfter = true;
-			} else if (isAfter) {
-				messages.push(msg);
-			}
-
-			if (messages.length >= amount) {
-				break;
-			}
-		}
-
-		return messages;
 	}
 }
 

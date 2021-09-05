@@ -31,5 +31,5 @@ module.exports = {
 	},
 	maxCharacters: 2000,
 	maxFileSize: 1024 * 1024 * 100, //100 MB
-	maxMessages: 20
+	maxMessages: 200
 }

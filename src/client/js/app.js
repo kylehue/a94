@@ -386,107 +386,6 @@ function UI_addMessage(msgData, options) {
 	return wrapper;
 }
 
-// $("#messages").scroll(event => {
-// 	let below = isScrolledToBottom(event.target);
-// 	let above = event.target.scrollTop < 20;
-
-// 	if (above) {
-// 		let firstMessage = $("#messages .message").first();
-// 		let firstMessageId = firstMessage.data("messageId");
-
-// 		if (firstMessageId) {
-// 			client.loadMessagesBefore(firstMessageId, config.maxMessages);
-// 		} else {
-// 			console.warn("Couldn't get first message id")
-// 		}
-// 	} else if (below) {
-// 		let lastMessage = $("#messages .message").last();
-// 		let lastMessageId = lastMessage.data("messageId");
-
-// 		if (lastMessageId) {
-// 			client.loadMessagesAfter(lastMessageId, config.maxMessages);
-// 		} else {
-// 			console.warn("Couldn't get first message id")
-// 		}
-// 	}
-// });
-
-// client.socket.on("deliverMessagesBefore", messages => {
-// 	messages.sort((a, b) => a.timestamp - b.timestamp);
-
-// 	console.log("deliverMessagesBefore");
-// 	console.log(messages);
-
-// 	let newMessagesHeight = 0;
-// 	let firstEl;
-
-// 	for (var i = messages.length - 1; i >= 0; i--) {
-// 		let msgData = messages[i];
-// 		let msgEl;
-
-// 		if (msgData.attachment) {
-// 			msgEl = addMessageFiles(msgData, {
-// 				maintainMaxMessages: false,
-// 				prepend: true
-// 			});
-// 		} else {
-// 			msgEl = UI_addMessage(msgData, {
-// 				prepend: true,
-// 				maintainMaxMessages: false
-// 			});
-// 		}
-
-// 		if (i == messages.length - 1) {
-// 			firstEl = msgEl;
-// 		}
-
-// 		/*newMessagesHeight += $(msgEl).outerHeight(true);
-
-// 		$("#messages .message").last().remove();*/
-// 	}
-
-// 	let targetScroll = firstEl.offset().top;
-// 	if (targetScroll > 30) {
-// 		$("#messages").scrollTop(targetScroll);
-// 	}
-// });
-
-// client.socket.on("deliverMessagesAfter", messages => {
-// 	messages.sort((a, b) => a.timestamp - b.timestamp);
-// 	console.log("deliverMessagesAfter");
-// 	console.log(messages);
-
-// 	/*let newMessagesHeight = 0;
-
-// 	for (var i = 0; i < messages.length; i++) {
-// 		let msgData = messages[i];
-
-// 		if (msgData.attachment) {
-// 			addMessageFiles(msgData, {
-// 				maintainMaxMessages: false
-// 			});
-
-// 		} else {
-// 			let msgEl = UI_addMessage(msgData, {
-// 				maintainMaxMessages: false
-// 			});
-
-// 			newMessagesHeight += $(msgEl).outerHeight(true);
-// 		}
-
-// 		//$("#messages .message").first().remove();
-// 	}
-
-// 	$("#messages").scrollTop($("#messages")[0].scrollHeight - $("#messages").outerHeight() - newMessagesHeight);*/
-// });
-
-window.spam = (count) => {
-	count = count || 100;
-	for (var i = 0; i < count; i++) {
-		client.sendMessage(i.toString());
-	}
-}
-
 function UI_addFile(msgData, file, options) {
 	options = options || {};
 
@@ -1004,13 +903,6 @@ client.socket.on("updateMessages", messages => {
 	$("#messages .message").remove();
 
 	messages.sort((a, b) => a.timestamp - b.timestamp);
-
-	for(var i = 0; i < messages.length; i++){
-		messages.shift();
-		if (i >= config.maxMessages) {
-			break;
-		}
-	}
 
 	for (var i = 0; i < messages.length; i++) {
 		let msg = messages[i];
