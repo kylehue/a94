@@ -74,6 +74,10 @@ class Client {
 			}
 		});
 
+		this.socket.on("removeValidateButtons", () => {
+			$("#users .user button.validate").remove();
+		});
+
 		this.socket.on("clientKicked", roomCode => {
 			this.socket.emit("leaveRoom", roomCode);
 

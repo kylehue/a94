@@ -1,6 +1,7 @@
 //Modules
 const events = require("../../../lib/events.js");
 const utils = require("../../../lib/utils.js");
+const config = require("../../../lib/config.js");
 const client = require("./../client.js");
 
 let imageTypes = ["image/png", "image/jpeg", "image/gif"];
@@ -57,7 +58,9 @@ const fileUploadApp = new Vue({
 	data: {
 		hidden: true,
 		fileName: "file",
-		roomName: "room"
+		roomName: "room",
+		showError: true,
+		errorText: ""
 	},
 	methods: {
 		show() {
@@ -83,8 +86,14 @@ const fileUploadApp = new Vue({
 
 			//Update files cache
 			_filesCache = [];
-			for(var i = 0; i < files.length; i++){
-				_filesCache.push(files[i]);
+			for (var i = 0; i < files.length; i++) {
+				let file = files[i];
+				if (file.size < config.maxFileSize) {
+					_filesCache.push(files[i]);
+				} else {
+					this.showError = true;
+					this.errorText = "Max file size is " + utils.bytesToSize(config.maxFileSize);
+				}
 			}
 
 			//Create file name for dialog's title
@@ -105,8 +114,8 @@ const fileUploadApp = new Vue({
 				$("#filePreviews .filePreview").remove();
 
 				//Create DOM file previews
-				for (var i = 0; i < files.length; i++) {
-					let file = files[i];
+				for (var i = 0; i < _filesCache.length; i++) {
+					let file = _filesCache[i];
 					file.id = utils.uid();
 					let url = URL.createObjectURL(file);
 					let type = file.type;

@@ -982,6 +982,10 @@ client.socket.on("roomNameChange", (roomCode, roomName) => {
 			break;
 		}
 	}
+
+	if (client.roomCode === roomCode) {
+		client.room.options.name = roomName;
+	}
 });
 
 client.socket.on("roomCodeChange", (oldRoomCode, newRoomCode) => {

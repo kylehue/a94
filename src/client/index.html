@@ -57,8 +57,9 @@
 					</button>
 				</div>
 			</div>
-			<div class="body flex">
+			<div class="body flex col">
 				<p class="note">Upload to {{roomName}}</p>
+				<p class="note-red" v-if="showError">{{errorText}}</p>
 			</div>
 			<div class="footer flex row v-center">
 				<button class="cancel default accent" v-on:click="hide">Cancel</button>

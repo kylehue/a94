@@ -309,6 +309,8 @@ io.on("connection", socket => {
 						room.options.locked = false;
 						sendServerMessage(room.code, "Room is now unlocked.", true);
 
+						socket.emit("removeValidateButtons");
+
 						for (var i = 0; i < room.users.length; i++) {
 							let user = room.users[i];
 
