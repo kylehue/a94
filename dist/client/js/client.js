@@ -185,7 +185,6 @@ var Client = /*#__PURE__*/function () {
             username: _this2.username,
             timestamp: Date.now()
           };
-          console.log(metadata);
           var uploadUI = UI_addUpload(uploadId, metadata.name, 0);
 
           _this2.socket.emit("uploadStart", uploadId, _this2.roomCode, msgData, metadata);

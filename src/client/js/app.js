@@ -220,8 +220,9 @@ events.on("tagUser", (id, name) => {
 		input.val(left + right);
 		input.caret(atIndex);
 
-		console.log(atIndex);
-
+		if (__development__) {
+			console.log(atIndex);
+		}
 	}
 });
 
@@ -532,8 +533,10 @@ function UI_addImage(msgData, imgURL, options) {
 		}
 	}
 
-	console.log("seifseoifesoifnesoifseofnsois")
-	console.log(_isScrolledToBottom);
+	if (__development__) {
+		console.log("seifseoifesoifnesoifseofnsois")
+		console.log(_isScrolledToBottom);
+	}
 
 	image.on("load", () => {
 		if (_isScrolledToBottom) {
@@ -670,14 +673,19 @@ function UI_addRoom(name, code) {
 		let rm = $(existingRooms[i]);
 
 		if (rm.data("code") === code) {
-			console.log("ROOM EXISTS!");
-			console.log(code);
+			if (__development__) {
+				console.log("ROOM EXISTS!");
+				console.log(code);
+			}
+
 			return;
 		}
 	}
 
-	console.log("ROOM DOESN'T EXIST!");
-	console.log(code);
+	if (__development__) {
+		console.log("ROOM DOESN'T EXIST!");
+		console.log(code);
+	}
 
 	//Add in UI
 	let room = $("<button>");
@@ -838,7 +846,10 @@ client.socket.on("roomUsernameChange", _user => {
 
 //Add user
 client.socket.on("updateUsers", serverUsers => {
-	console.log("updateUsers", serverUsers);
+	if (__development__) {
+		console.log("updateUsers", serverUsers);
+	}
+
 	serverUsers.sort((a, b) => a.name - b.name);
 
 	//Adding new users from server
@@ -900,12 +911,17 @@ function addMessageFiles(msgData, options) {
 		return UI_addFile(msgData, file, options);
 	}
 
-	console.log(file);
-	console.log(msgData);
+	if (__development__) {
+		console.log(file);
+		console.log(msgData);
+	}
 }
 
 client.socket.on("updateMessages", messages => {
-	console.log("updateMessages");
+	if (__development__) {
+		console.log("updateMessages");
+	}
+
 	$("#messages .message").remove();
 
 	messages.sort((a, b) => a.timestamp - b.timestamp);
@@ -924,14 +940,19 @@ client.socket.on("updateMessages", messages => {
 		}
 	}
 
-	console.log(messages);
+	if (__development__) {
+		console.log(messages);
+	}
 });
 
 client.socket.on("newFile", addMessageFiles);
 
 client.socket.on("updateRoom", roomData => {
-	console.log("updateRoom");
-	console.log(roomData);
+	if (__development__) {
+		console.log("updateRoom");
+		console.log(roomData);
+	}
+
 	$("#lockOverlay").addClass("hidden");
 	UI_addRoom(roomData.options.name, roomData.code);
 
@@ -948,30 +969,38 @@ client.socket.on("updateRoom", roomData => {
 });
 
 client.socket.on("updateRoomPending", roomData => {
-	console.log("updateRoomPending");
-	console.log(roomData)
+	if (__development__) {
+		console.log("updateRoomPending");
+		console.log(roomData)
+	}
 	$("#lockOverlay").removeClass("hidden");
 });
 
 client.socket.on("newMessage", msgData => {
-	console.log("newMessage");
-	console.log(msgData)
+	if (__development__) {
+		console.log("newMessage");
+		console.log(msgData)
+	}
 	UI_addMessage(msgData, {
 		maintainMaxMessages: true
 	});
 });
 
 client.socket.on("serverMessage", msgData => {
-	console.log("serverMessage");
-	console.log(msgData);
+	if (__development__) {
+		console.log("serverMessage");
+		console.log(msgData);
+	}
 	UI_addMessage(msgData, {
 		maintainMaxMessages: true
 	});
 });
 
 client.socket.on("roomNameChange", (roomCode, roomName) => {
-	console.log("roomNameChange");
-	console.log(roomCode, roomName);
+	if (__development__) {
+		console.log("roomNameChange");
+		console.log(roomCode, roomName);
+	}
 
 	let roomsEl = $("#rooms");
 	let rooms = roomsEl.find(".select-item");
@@ -995,7 +1024,9 @@ client.socket.on("roomNameChange", (roomCode, roomName) => {
 });
 
 client.socket.on("roomCodeChange", (oldRoomCode, newRoomCode) => {
-	console.log("roomCodeChange");
+	if (__development__) {
+		console.log("roomCodeChange");
+	}
 
 	let roomsEl = $("#rooms");
 	let rooms = roomsEl.find(".select-item");
@@ -1008,14 +1039,9 @@ client.socket.on("roomCodeChange", (oldRoomCode, newRoomCode) => {
 		let room = $(rooms[i]);
 		if (room.data("code") === oldRoomCode) {
 
-			console.log("ROOM BEFORE")
-			console.log(room);
 			//room.find("span").text(roomName);
 			room.attr("id", newRoomCode);
 			room.data("code", newRoomCode);
-
-			console.log("ROOM AFTER")
-			console.log(room);
 
 			break;
 		}
@@ -1029,7 +1055,7 @@ $("#rooms").on("change", event => {
 	if ($("#rooms .room").length) {
 		$("#emptyRooms").addClass("hidden");
 		zzz.stop();
-	}else{
+	} else {
 		$("#emptyRooms").removeClass("hidden");
 		zzz.play();
 	}
@@ -1038,7 +1064,9 @@ $("#rooms").on("change", event => {
 $("#fileInput").on("change", event => {
 	let files = $("#fileInput")[0].files;
 	fileUploadApp.ask(files, client.room.options.name);
-	console.log(files);
+	if (__development__) {
+		console.log(files);
+	}
 });
 
 $("#uploadsWrapper").on("change", () => {
@@ -1108,7 +1136,9 @@ $(window).on("dragover", event => {
 //Handle escape keys
 window.addEventListener("keydown", event => {
 	if (event.shiftKey) {
-		console.log(event.keyCode);
+		if (__development__) {
+			console.log(event.keyCode);
+		}
 	}
 	let escapeKeyCodes = [27, 13, 32];
 	if (escapeKeyCodes.includes(event.keyCode)) {

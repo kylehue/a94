@@ -180,8 +180,6 @@ class Client {
 					timestamp: Date.now()
 				};
 
-				console.log(metadata);
-
 				let uploadUI = UI_addUpload(uploadId, metadata.name, 0);
 
 				this.socket.emit("uploadStart", uploadId, this.roomCode, msgData, metadata);

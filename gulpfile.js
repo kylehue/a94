@@ -3,6 +3,7 @@ const nodemon = require("gulp-nodemon");
 const cssuglify = require("gulp-uglifycss")
 const autoprefixer = require("gulp-autoprefixer")
 const htmlminify = require("gulp-minify-html");
+const svgminify = require("gulp-svgmin");
 const babel = require("gulp-babel");
 const replace = require("gulp-replace");
 const webpack = require("webpack-stream");
@@ -103,6 +104,7 @@ gulp.task("client:img", function() {
 
 gulp.task("client:svg", function() {
 	return gulp.src([paths.client.svg])
+		.pipe(svgminify())
 		.pipe(gulp.dest("dist/client/assets/svg/"));
 });
 
