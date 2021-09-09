@@ -416,6 +416,8 @@
 
 canvas#zzz {
 	position: absolute;
+	pointer-events: none;
+	user-select: none;
 	left: 0;
 	top: 0;
 }

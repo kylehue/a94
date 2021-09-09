@@ -57,6 +57,7 @@ $("#composeMessage").on("keydown", event => {
 			}
 
 			input.val("");
+			client.afk();
 		} else {
 			$("#tagList button.active").trigger("click");
 		}
@@ -1122,7 +1123,7 @@ window.addEventListener("keydown", event => {
 });
 
 $("#navigation #brand").on("click", () => {
-	
+
 });
 
 //TODO

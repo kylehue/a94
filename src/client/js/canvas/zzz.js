@@ -46,7 +46,7 @@ class Entity {
 
 		this.id = utils.uid();
 		this.image = utils.random(images);
-		this.size = utils.random(5, 40);
+		this.size = utils.random(5, 20);
 
 		let x = typeof options.x != "number" ? utils.random(0, canvas.width) : options.x;
 		let y = typeof options.y != "number" ? utils.random(0, canvas.height) : options.y;
@@ -57,18 +57,40 @@ class Entity {
 		this.velocity = vector(velX, velY);
 
 		this.angle = utils.random(-Math.PI, Math.PI);
-		this.angularVelocity = utils.random(-0.001, 0.001);
+		this.angularVelocity = utils.random(-0.0015, 0.0015);
 
-		this.opacity = utils.random(0.01, 0.05);
+		this.opacity = utils.random(0.01, 0.2);
+		this.fadeStrength = utils.random(0.0003, 0.001);
+
+		this.wiggliness = utils.random(-80, 80);
+		this.wiggleRange = utils.random(0.5, 1);
+
+		if (this.wiggliness < 0) {
+			this.wiggliness = utils.clamp(this.wiggliness, -Infinity, -40);
+		} else {
+			this.wiggliness = utils.clamp(this.wiggliness, 40, Infinity);
+		}
 
 		this.offscreen = false;
 	}
 
 	update() {
 		this.position.sub(this.velocity);
-		this.angle += this.angularVelocity;
+		//this.angle += this.angularVelocity;
+		this.angle = this.velocity.heading() + Math.PI / 2;
+
+		this.velocity.x = Math.cos(frameCount / this.wiggliness) * this.wiggleRange;
+
+		this.wiggliness *= 1.01;
 
 		if (this.position.y + this.size < 0 || this.position.x + this.size < 0 || this.position.x - this.size > canvas.width) {
+			this.offscreen = true;
+		}
+
+		if (this.opacity - this.fadeStrength > 0) {
+			this.opacity -= this.fadeStrength;
+		} else {
+			this.opacity = 0;
 			this.offscreen = true;
 		}
 	}
@@ -89,13 +111,20 @@ class World {
 	constructor() {
 		this.entities = [];
 
-		this.maxEntitiesOnScreen = 10;
+		this.maxEntitiesOnScreen = 30;
 
 		for (var i = 0; i < 10; i++) {
-			this.entities.push(new Entity());
+			this.addEntity();
 		}
 
-		this._lastTick = Math.round(utils.random(200, 600));
+		this._lastTick = 50;
+	}
+
+	addEntity() {
+		this.entities.push(new Entity({
+			x: canvas.width / 2 + utils.random(-50, 50),
+			y: canvas.height + utils.random(50, 200)
+		}));
 	}
 
 	update() {
@@ -105,19 +134,17 @@ class World {
 
 			if (entity.offscreen) {
 				this.entities.splice(i, 1);
-				this.entities.push(new Entity({
-					y: canvas.height + 50
-				}));
+				this.addEntity();
 			}
 		}
 
 		if (this.entities.length < this.maxEntitiesOnScreen) {
 			if (frameCount % this._lastTick == 0) {
-				this.entities.push(new Entity({
-					y: canvas.height + 50
-				}));
+				for (var i = 0; i < Math.round(utils.random(5, 10)); i++) {
+					this.addEntity();
+				}
 
-				this._lastTick = Math.round(utils.random(200, 600));
+				this._lastTick = Math.round(utils.random(50, 150));
 			}
 		}
 	}
