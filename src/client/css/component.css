@@ -116,3 +116,14 @@
 	width: 100%;
 	height: 100%;
 }
+
+.custom-input {
+	width: fit-content;
+	height: fit-content;
+}
+
+.custom-input img.icon {
+	position: absolute;
+	height: 40%;
+	margin-left: 10px;
+}

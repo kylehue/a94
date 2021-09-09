@@ -8,20 +8,30 @@
 }
 
 #navigation #brand {
-	pointer-events: none;
-	user-select: none;
 	font-weight: 800;
 	width: fit-content;
 	height: 100%;
 	padding: 0 5px;
 	box-sizing: border-box;
+	cursor: pointer;
 }
 
 #navigation #brand img {
 	width: auto;
-	height: 30%;
+	height: 40%;
+}
+
+#navigation .custom-input {
+	margin-left: auto;
 }
 
 #username {
-	margin-left: auto;
+	padding-left: 35px;
+	width: 120px;
+
+	background: unset;
+}
+
+#username:hover, #username:focus {
+	background: var(--darko-b);
 }

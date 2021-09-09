@@ -11,6 +11,11 @@ const streamsaver = require("streamsaver");
 const roomApp = require("./views/view.room.js");
 const fileUploadApp = require("./views/view.fileUpload.js");
 const tagList = require("./views/view.tagList.js");
+const misc = require("./views/view.misc.js");
+
+//Canvas animations
+const zzz = require("./canvas/zzz.js");
+zzz.play();
 
 //Public variables
 const __development__ = true;
@@ -1019,6 +1024,14 @@ client.socket.on("roomCodeChange", (oldRoomCode, newRoomCode) => {
 $("#rooms").on("change", event => {
 	let code = $("#rooms").data("code");
 	client.join(code);
+
+	if ($("#rooms .room").length) {
+		$("#emptyRooms").addClass("hidden");
+		zzz.stop();
+	}else{
+		$("#emptyRooms").removeClass("hidden");
+		zzz.play();
+	}
 });
 
 $("#fileInput").on("change", event => {
@@ -1106,6 +1119,10 @@ window.addEventListener("keydown", event => {
 			$("#composeMessage").focus();
 		}
 	}
+});
+
+$("#navigation #brand").on("click", () => {
+	
 });
 
 //TODO

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>a94</title>
+		<title>Corvius</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="icon" href="assets/svg/brand/corvius-vibrant-logo.svg">
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
@@ -14,6 +15,14 @@
 		<link rel="stylesheet" type="text/css" href="css/dialogs.css">
 	</head>
 	<body class="flex col">
+
+		<div id="splashScreen" class="absolute flex" v-if="!hidden">
+			<div class="brandWrapper flex col center">
+				<img src="assets/svg/brand/corvius-light-logo.svg">
+				<img src="assets/svg/brand/corvius-light-text.svg">
+			</div>	
+		</div>
+
 		<div id="overlay" class="absolute hidden"></div>
 		<div id="imagePreviewApp" class="absolute flex center hidden">
 			<img src="assets/images/2pliq2.jpg">
@@ -87,7 +96,7 @@
 		</div>
 		<div id="navigation" class="darko-a flex row v-center">
 			<div id="brand" class="flex center">
-				<img src="assets/svg/a94.svg">
+				<img src="assets/svg/brand/corvius-vibrant-logo.svg">
 			</div>
 			<div id="rooms" class="select flex col h-center">
 				<div class="select-infoWrapper flex row v-center">
@@ -108,13 +117,23 @@
 			<img src="assets/svg/plus.svg">
 			<span>Join Room</span>
 			</button>
-			<input id="username" class="default" placeholder="Username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
+			<div class="custom-input flex row v-center">
+				<img class="icon" src="assets/svg/user.svg"></img>
+				<input id="username" class="default" placeholder="Username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
+			</div>
 		</div>
 		<div id="body" class="flex row">
 			<div id="lockOverlay" class="absolute flex center hidden">
 				<div class="flex col h-center">
 					<img src="assets/svg/lock.svg">
 					<p>This room is locked.</p>
+				</div>
+			</div>
+			<div id="emptyRooms" class="absolute flex center">
+				<canvas id="zzz"></canvas>
+				<div class="flex col h-center">
+					<img src="assets/svg/zzz.svg">
+					<p>You are not in any room.</p>
 				</div>
 			</div>
 			<div id="dropOverlay" class="absolute flex center" style="visibility: hidden;">

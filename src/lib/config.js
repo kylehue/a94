@@ -29,7 +29,6 @@ module.exports = {
 			description: "Kick mentioned users."
 		}
 	},
-	maxCharacters: 2000,
 	maxFileSize: 1024 * 1024 * 100, //100 MB
 	maxMessages: 200
 }
